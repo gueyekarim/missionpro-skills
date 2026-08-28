@@ -2,6 +2,8 @@ import { db } from "@/lib/db";
 import { isServerConfigPresent } from "@/lib/config";
 import { NovaSmokeButton } from "./nova-smoke-button";
 
+export const dynamic = "force-dynamic";
+
 async function getDatabaseStatus() {
   if (!isServerConfigPresent()) return { ok: false, detail: "Configuration absente" };
   try {

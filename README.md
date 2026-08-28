@@ -67,6 +67,10 @@ npm run dev
 Le check HTTP est disponible sur `GET /api/health`. Une fois connecté, la page
 `/app/status` vérifie également la base et expose le smoke-test NOVA contrôlé.
 
+Le rapport de clôture et les preuves par Gate sont regroupés dans
+[`docs/SPRINT_0_EVIDENCE.md`](docs/SPRINT_0_EVIDENCE.md). Les contrôles d’intégration PostgreSQL
+et le scan de sécurité se lancent avec `npm run test:integration` et `npm run security:check`.
+
 ### Socle extensible
 
 Les contenus de blog, modules et MOOC futurs seront traités comme des ressources pédagogiques
