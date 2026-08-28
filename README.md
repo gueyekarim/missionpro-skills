@@ -99,6 +99,13 @@ les Evidence, le niveau vérifié et la cible. L’agrégation n’est pas une m
 rubric coverage, score, niveau de l’activité, nombre et cohérence des preuves, difficulté, récence
 et statut de validation. Une seule preuve AI assessed reste provisoire.
 
+## Final MVP readiness
+
+The complete individual Golden Path and final QA/security gate pass for a controlled pilot.
+The release gate includes 49 automated tests, 51 production HTTP checks, referential-integrity
+queries, restart persistence, user isolation, lint/type/build checks and an audit-clean dependency
+tree. See [`docs/QA_SECURITY_RELEASE.md`](docs/QA_SECURITY_RELEASE.md).
+
 ## Démarrage développeur
 
 Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,

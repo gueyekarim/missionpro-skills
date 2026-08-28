@@ -4,13 +4,14 @@ import { persistCapabilityDraft, serializeCapability } from "@/server/capabiliti
 
 export const dynamic = "force-dynamic";
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 
   try {
+    const { id } = await params;
     const body = (await request.json()) as { draft?: unknown };
-    const capability = await persistCapabilityDraft(body.draft ?? body, user.id, params.id);
+    const capability = await persistCapabilityDraft(body.draft ?? body, user.id, id);
     return NextResponse.json({ capability: serializeCapability(capability) });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not update capability";

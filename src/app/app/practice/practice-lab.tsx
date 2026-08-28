@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Capability = { id: string; code: string; name: string };
 type Criterion = { code: string; label: string; maxScore: number; weight: number };
@@ -45,7 +45,7 @@ export function PracticeLab({ initialCapabilities }: { initialCapabilities: Capa
   const [contestReason, setContestReason] = useState("");
   const activity = useMemo(() => dashboard?.activities.find((item) => item.id === activityId) ?? dashboard?.activities[0], [dashboard, activityId]);
 
-  async function loadDashboard(selectedCapabilityId = capabilityId) {
+  const loadDashboard = useCallback(async (selectedCapabilityId = capabilityId) => {
     if (!selectedCapabilityId) return;
     setLoading(true);
     setError("");
@@ -62,9 +62,9 @@ export function PracticeLab({ initialCapabilities }: { initialCapabilities: Capa
     } finally {
       setLoading(false);
     }
-  }
+  }, [capabilityId]);
 
-  useEffect(() => { void loadDashboard(capabilityId); }, [capabilityId]);
+  useEffect(() => { void loadDashboard(capabilityId); }, [capabilityId, loadDashboard]);
 
   async function submit() {
     if (!activity) return;

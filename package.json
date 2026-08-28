@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "NODE_OPTIONS=--conditions=react-server tsx --test tests/*.test.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
@@ -20,9 +20,9 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.14.0",
+    "@prisma/client": "6.12.0",
     "bcryptjs": "^3.0.2",
-    "next": "^14.2.35",
+    "next": "^15.5.24",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "server-only": "^0.0.1",
@@ -33,9 +33,14 @@
     "@types/node": "^22.15.30",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
-    "prisma": "^6.14.0",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "15.5.24",
+    "prisma": "6.12.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.24"
   },
   "engines": {
     "node": ">=20.0.0"

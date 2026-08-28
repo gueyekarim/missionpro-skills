@@ -2,7 +2,7 @@ import "server-only";
 
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
-import { tutorRequestSchema, type ContextContract, type TutorOutput, type TutorRequest } from "./nova/context-contract";
+import { tutorRequestSchema, type ContextContract, type TutorRequest } from "./nova/context-contract";
 import { NovaOrchestrator } from "./nova/orchestrator";
 
 type TutorSnapshot = {
@@ -46,6 +46,7 @@ type TutorSnapshot = {
       completionCondition: string;
       status: string;
       skillCode: string | null;
+      targetLevel: number;
       learningUnit: { id: string; title: string; objective: string; type: string } | null;
     }>;
   } | null;

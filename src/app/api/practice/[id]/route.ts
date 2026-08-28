@@ -8,10 +8,11 @@ const reviewBodySchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("reassess") })
 ]);
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-  const id = z.string().uuid().safeParse(params.id);
+  const { id: routeId } = await params;
+  const id = z.string().uuid().safeParse(routeId);
   if (!id.success) return NextResponse.json({ error: "Invalid review target" }, { status: 400 });
   try {
     const body = reviewBodySchema.parse(await request.json());

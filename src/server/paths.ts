@@ -5,7 +5,6 @@ import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { NovaOrchestrator } from "./nova/orchestrator";
 import {
-  personalPathOutputSchema,
   pathStages,
   type PathStage,
   type PersonalPathItem,

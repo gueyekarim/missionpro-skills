@@ -101,11 +101,11 @@ export function calculateDiagnostic(
 ) {
   const instrument = getDiagnosticInstrument(capability);
   const dimensions = [
-    { id: "knowledge", method: "knowledge_question", answer: responses.knowledgeAnswer, item: instrument.items[0] },
-    { id: "mini-case", method: "mini_case", answer: responses.miniCaseAnswer, item: instrument.items[1] },
-    { id: "production", method: "short_production", answer: responses.productionAnswer, item: instrument.items[2] }
+    { method: "knowledge_question", answer: responses.knowledgeAnswer, item: instrument.items[0] },
+    { method: "mini_case", answer: responses.miniCaseAnswer, item: instrument.items[1] },
+    { method: "short_production", answer: responses.productionAnswer, item: instrument.items[2] }
   ];
-  const scored = dimensions.map(({ id, method, answer, item }) => {
+  const scored = dimensions.map(({ method, answer, item }) => {
     const result = scoreAnswer(answer, item.criteria);
     return {
       dimension: item.title,

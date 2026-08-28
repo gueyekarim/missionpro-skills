@@ -12,20 +12,22 @@ async function ownedPath(id: string, userId: string) {
   });
 }
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-  const path = await ownedPath(params.id, user.id);
+  const { id } = await params;
+  const path = await ownedPath(id, user.id);
   if (!path) return NextResponse.json({ error: "Personal path not found" }, { status: 404 });
   return NextResponse.json({ path: serializePersonalPath(path) });
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   try {
+    const { id } = await params;
     const progress = pathProgressSchema.parse(await request.json());
-    const existing = await ownedPath(params.id, user.id);
+    const existing = await ownedPath(id, user.id);
     if (!existing) return NextResponse.json({ error: "Personal path not found" }, { status: 404 });
     if (!existing.items.some((item) => item.id === progress.itemId)) {
       return NextResponse.json({ error: "Path item not found" }, { status: 404 });
@@ -45,7 +47,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         data: { status: statuses.every((status) => status === "completed") ? "completed" : "in_progress" }
       });
     });
-    const updated = await ownedPath(params.id, user.id);
+    const updated = await ownedPath(id, user.id);
     if (!updated) throw new Error("Personal path not found after update");
     return NextResponse.json({ path: serializePersonalPath(updated) });
   } catch (error) {

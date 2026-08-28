@@ -9,8 +9,9 @@ const sections: Record<string, { title: string; description: string }> = {
   passport: { title: "Passport", description: "Le Capability Passport sera activé lorsque des preuves évaluées existeront." }
 };
 
-export default function PlaceholderPage({ params }: { params: { section: string } }) {
-  const section = sections[params.section];
+export default async function PlaceholderPage({ params }: { params: Promise<{ section: string }> }) {
+  const { section: sectionId } = await params;
+  const section = sections[sectionId];
   if (!section) notFound();
   return (
     <section className="hero">
