@@ -69,11 +69,13 @@ Valider une boucle complète de développement capacitaire avant d'ajouter marke
 **Exit:** une production MP-001 évaluée peut devenir, sur choix explicite, une Evidence traçable et visible par Capability.
 
 ## Sprint 5B — Capability Passport
-- mise à jour evidence-aware de user_capabilities ;
+- agrégation evidence-aware en lecture seule ;
 - Capability Passport ;
-- next action.
+- observed / demonstrated / verified / target ;
+- explication des Evidence contributrices ;
+- next action sans mutation silencieuse.
 
-**Exit:** différé ; non implémenté dans Sprint 5A.
+**Exit:** le Passport répond à ce qui a été réellement démontré, au niveau soutenu par les preuves et au degré de validation.
 
 ## Deferred after MVP
 Organization Mode complet, simulations multi-agents, payments, storefront, community, marketing automation, affiliate system, native mobile applications et marketplace.

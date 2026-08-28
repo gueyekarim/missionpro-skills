@@ -30,7 +30,13 @@ Modes MVP : Guided Exercise, Professional Case, Challenge, Short Simulation et R
 Une production est évaluée avec une rubric explicite. L’utilisateur peut ensuite choisir **Save this work as evidence**. L’Evidence Portfolio regroupe les preuves par Capability et montre la production, la source, les critères, le score, l’assessor, la provenance, le statut, l’historique de réévaluation et le besoin de validation. Une Evidence AI assessed n’est ni certifiée ni automatiquement convertie en maîtrise vérifiée.
 
 ## Screen 8 — Capability Passport
-Affiche les capacités en développement et démontrées, niveaux observés et cibles, nombre et qualité des preuves, dernière évaluation et prochaine action recommandée.
+Affiche les capacités en développement et démontrées, avec quatre états séparés : niveau observé,
+niveau démontré, niveau vérifié et cible. Pour chaque Capability : gap, progression, nombre et
+qualité des Evidence, statut de validation, assessment récent et prochaine action.
+
+`Why this level?` ouvre les règles d’agrégation et chaque Evidence contributrice : score, statut,
+couverture de la rubric, difficulté, récence et niveau candidat. Une seule Evidence AI assessed
+forte s’affiche comme provisoire, jamais comme vérifiée ou certifiée.
 
 ## Organization Mode — post-MVP
 Question d’entrée : **What must your organization be able to do?**

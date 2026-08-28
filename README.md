@@ -92,12 +92,19 @@ conserve les liens vers la Capability, l’activité, la production, l’assessm
 score et la provenance. `/app/evidence` regroupe ces preuves par Capability et montre l’historique
 de réévaluation ainsi que le besoin de validation supplémentaire.
 
+## Sprint 5B — Capability Passport
+
+La route protégée `/app/passport` distingue le niveau observé au diagnostic, le niveau démontré par
+les Evidence, le niveau vérifié et la cible. L’agrégation n’est pas une moyenne : elle inspecte
+rubric coverage, score, niveau de l’activité, nombre et cohérence des preuves, difficulté, récence
+et statut de validation. Une seule preuve AI assessed reste provisoire.
+
 ## Démarrage développeur
 
 Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
 authentification individuelle par session HttpOnly, navigation protégée et NOVA Orchestrator
-server-side. Capabilities, Diagnostic, My Path, NOVA Tutor, Practice, Assessment et Evidence
-Portfolio sont fonctionnels ; Capability Passport reste un placeholder pour un sprint suivant.
+server-side. Capabilities, Diagnostic, My Path, NOVA Tutor, Practice, Assessment, Evidence
+Portfolio et Capability Passport sont fonctionnels.
 
 ### Prérequis
 

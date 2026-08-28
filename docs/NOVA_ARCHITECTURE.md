@@ -64,5 +64,18 @@ depuis la submission source.
 `AI assessed` ne devient jamais automatiquement `Human validated`, `MissionPro verified` ou
 `Externally certified`. L’existence d’une Evidence ne modifie pas silencieusement la maîtrise.
 
+## Capability Passport aggregation
+
+Sprint 5B calcule un état de Passport en lecture seule depuis Capability, Diagnostic,
+UserCapability, PracticeActivity, Assessment et Evidence. NOVA peut recommander une prochaine
+action, mais ne modifie aucun niveau.
+
+Le Passport ne fait pas une moyenne des scores. Il cherche le niveau d’activité le plus élevé
+soutenu par la couverture des critères et la qualité de l’assessment, puis qualifie ce résultat :
+`not_established`, `provisional` ou `established`. Une seule production AI assessed reste
+provisoire ; deux productions AI assessed cohérentes ou une validation humaine sont nécessaires
+pour établir le niveau. Seuls `MissionPro verified` et `Externally certified` peuvent produire un
+niveau vérifié.
+
 ## Future direction
 Le NOVA Orchestrator pourra évoluer vers un système multi-agents avec simulations interactives, outils professionnels, RAG sur corpus MissionPro et accompagnement continu Learn → Practice → Work → Evidence.

@@ -9,11 +9,12 @@ import { persistPersonalPath } from "../src/server/paths";
 import { generateTutorResponse } from "../src/server/tutor";
 import { ensurePracticeActivities, reviewPractice, submitPractice } from "../src/server/practice";
 import { getEvidencePortfolio, saveSubmissionAsEvidence } from "../src/server/evidence";
+import { getCapabilityPassport } from "../src/server/passport";
 
 const hasDatabase = Boolean(process.env.DATABASE_URL);
 const db = new PrismaClient();
 
-describe("Sprint 0 through Sprint 5A PostgreSQL integration", () => {
+describe("Sprint 0 through Sprint 5B PostgreSQL integration", () => {
   test("migration tables and repeatable seed are present", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
     const tables = await db.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename FROM pg_catalog.pg_tables
@@ -215,6 +216,33 @@ describe("Sprint 0 through Sprint 5A PostgreSQL integration", () => {
     assert.equal(await db.evidence.count({
       where: { practiceActivityId: foundationPractice.activities.find((activity) => activity.type === "exercise")?.id }
     }), 0);
+    const weakPassport = await getCapabilityPassport(foundationUser.id);
+    const strongPassport = await getCapabilityPassport(advancedUser.id);
+    const weakMp001 = weakPassport.capabilities.find((item) => item.capability.code === "CAP-PROJ-RISK-001");
+    const strongMp001 = strongPassport.capabilities.find((item) => item.capability.code === "CAP-PROJ-RISK-001");
+    assert.equal(weakMp001?.demonstratedLevel, null);
+    assert.equal(weakMp001?.demonstratedState, "not_established");
+    assert.equal(strongMp001?.demonstratedLevel, strong.activity.masteryLevel);
+    assert.equal(strongMp001?.demonstratedState, "provisional");
+    assert.equal(strongMp001?.verifiedLevel, null);
+    assert.equal(strongMp001?.evidenceCount, 1);
+    const strongEvidenceRecord = await db.evidence.findFirstOrThrow({ where: { userId: advancedUser.id } });
+    await db.evidence.update({
+      where: { id: strongEvidenceRecord.id },
+      data: {
+        status: "Human validated",
+        provenance: "Human validated",
+        assessorType: "Human",
+        humanValidation: { reviewerRole: "MP-001 test reviewer", decision: "validated" },
+        validationRequired: false
+      }
+    });
+    const validatedPassport = await getCapabilityPassport(advancedUser.id);
+    const validatedMp001 = validatedPassport.capabilities.find((item) => item.capability.code === "CAP-PROJ-RISK-001");
+    assert.equal(validatedMp001?.demonstratedLevel, strong.activity.masteryLevel);
+    assert.equal(validatedMp001?.demonstratedState, "established");
+    assert.equal(validatedMp001?.validationStatus, "Human validated");
+    assert.equal(validatedMp001?.verifiedLevel, null);
     assert.equal(await db.userCapability.findUniqueOrThrow({
       where: { userId_capabilityId: { userId: foundationUser.id, capabilityId: capability.id } }
     }).then((profile) => profile.observedLevel), 1);

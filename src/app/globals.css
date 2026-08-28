@@ -316,6 +316,39 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18, 59, 112,
 .evidence-card details { border-top: 1px solid var(--line); padding-top: 11px; }
 .evidence-card summary { cursor: pointer; color: var(--blue); font-weight: 800; font-size: 12px; }
 .evidence-card details p { color: var(--muted); font-size: 11px; margin: 7px 0; }
+.passport-page { display: grid; gap: 18px; }
+.passport-hero { display: grid; gap: 12px; }
+.passport-hero h1, .passport-hero p { margin-bottom: 0; }
+.passport-card { display: grid; gap: 17px; }
+.passport-card h2 { margin: 3px 0 0; }
+.passport-state { text-transform: capitalize; }
+.passport-state.established { background: #e6f5ec; border-color: #7cc694; color: #1b6535; }
+.passport-state.provisional { background: #fff4cb; border-color: var(--gold); color: #715600; }
+.passport-state.not_established { background: #f8e7e5; border-color: #dba19c; color: #8a3028; }
+.passport-level-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.passport-level { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 5px; background: #fbfcfe; }
+.passport-level span, .passport-stats span, .passport-evidence-list small { color: var(--muted); font-size: 10px; }
+.passport-level strong { font-size: 14px; }
+.passport-progress { display: grid; gap: 8px; }
+.passport-progress .section-heading { margin: 0; }
+.progress-track { height: 10px; background: #e7edf3; border-radius: 99px; overflow: hidden; }
+.progress-track span { display: block; height: 100%; background: var(--blue); border-radius: inherit; }
+.passport-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.passport-stats span { border: 1px solid var(--line); border-radius: 99px; padding: 7px 10px; }
+.passport-stats strong { color: var(--ink); }
+.passport-next, .passport-latest { border-left: 3px solid var(--blue); padding: 10px 13px; background: #f7faff; }
+.passport-next p, .passport-latest p { margin: 4px 0; }
+.passport-next small { color: #8a4e00; }
+.passport-explain { border-top: 1px solid var(--line); padding-top: 13px; }
+.passport-explain summary { cursor: pointer; color: var(--blue); font-size: 12px; font-weight: 800; }
+.passport-explain ul { color: var(--muted); padding-left: 18px; font-size: 12px; line-height: 1.6; }
+.passport-explain h3 { font-size: 14px; margin: 15px 0 8px; }
+.passport-evidence-list { display: grid; gap: 8px; }
+.passport-evidence-list > div { display: grid; gap: 3px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; }
+.passport-evidence-list span { color: var(--ink); font-size: 11px; }
+@media (max-width: 780px) {
+  .passport-level-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 780px) {
   .shell { grid-template-columns: 1fr; }
   .sidebar { padding: 14px; }

@@ -88,5 +88,12 @@ organizations, missions, outcomes, outcome_capabilities, simulations, capability
 ## MVP database scope
 Implémentation jusqu’au Sprint 5A : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions, personal_capability_paths, personal_path_items, tutor_interactions, practice_activities, practice_submissions, practice_assessment_attempts.
 
+## Capability Passport projection
+
+Sprint 5B n’ajoute aucune table. Le Passport est une projection explicable, calculée en lecture
+seule à partir de `user_capabilities`, `diagnostic_sessions`, `evidence`,
+`practice_activities` et des snapshots d’assessment. Cette séparation évite qu’une lecture du
+Passport modifie silencieusement le niveau observé ou vérifié.
+
 ## Core invariant
 Une progression de maîtrise doit être traçable jusqu'aux évaluations et preuves qui la justifient. L'auto-évaluation seule ne peut produire un statut de maîtrise vérifiée.
