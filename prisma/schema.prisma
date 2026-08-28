@@ -31,6 +31,10 @@ model Capability {
   capabilityType      String                    @default("professional")
   purpose             String?
   businessOutcome     String?
+  sourceIntent        String?
+  outcomes            Json?
+  knowledgeRequirements Json?
+  observableTasks     Json?
   successCriteria     Json?
   context             Json?
   criticality         String?

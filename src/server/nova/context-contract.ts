@@ -41,3 +41,32 @@ export const novaSmokeOutputSchema = z.object({
 });
 
 export type NovaSmokeOutput = z.infer<typeof novaSmokeOutputSchema>;
+
+export const capabilitySkillDraftSchema = z.object({
+  code: z.string().regex(/^SKILL-[A-Z0-9-]+$/),
+  name: z.string().min(1).max(200),
+  description: z.string().min(1).max(1000),
+  category: z.string().min(1).max(100),
+  skillType: z.string().min(1).max(100),
+  requiredLevel: z.number().int().min(1).max(5)
+});
+
+export const capabilityDraftSchema = z.object({
+  code: z.string().regex(/^CAP-[A-Z0-9-]+$/),
+  sourceIntent: z.string().min(1).max(500),
+  name: z.string().min(1).max(200),
+  description: z.string().min(1).max(2000),
+  domain: z.string().min(1).max(200),
+  purpose: z.string().min(1).max(1000),
+  businessOutcome: z.string().min(1).max(1000),
+  outcomes: z.array(z.string().min(1).max(500)).min(1).max(12),
+  skills: z.array(capabilitySkillDraftSchema).min(1).max(20),
+  knowledgeRequirements: z.array(z.string().min(1).max(500)).max(20),
+  observableTasks: z.array(z.string().min(1).max(500)).min(1).max(20),
+  targetLevel: z.number().int().min(1).max(5),
+  successCriteria: z.array(z.string().min(1).max(500)).min(1).max(20),
+  expectedEvidence: z.array(z.string().min(1).max(500)).min(1).max(20)
+});
+
+export type CapabilitySkillDraft = z.infer<typeof capabilitySkillDraftSchema>;
+export type CapabilityDraft = z.infer<typeof capabilityDraftSchema>;

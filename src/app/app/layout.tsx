@@ -31,8 +31,8 @@ export default async function AppLayout({ children }: Readonly<{ children: React
         </div>
       </aside>
       <div className="main">
-        <header className="topbar">
-          <span className="eyebrow">Individual Mode · Sprint 0</span>
+         <header className="topbar">
+           <span className="eyebrow">Individual Mode · Capability Registry</span>
           <span className="topbar-user">{user.name ?? user.email}</span>
         </header>
         <main className="content">{children}</main>

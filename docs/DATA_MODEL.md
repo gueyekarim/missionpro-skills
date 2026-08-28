@@ -7,7 +7,7 @@ Organization → Mission → Outcome → Capability → Skills / Knowledge / Tas
 
 ## Core entities
 ### capabilities
-id, code, name, description, domain, capability_type, purpose, business_outcome, success_criteria, context, criticality, target_level, evidence_requirements, version, status, created_by, created_at, updated_at.
+id, code, source_intent, name, description, domain, capability_type, purpose, business_outcome, outcomes, knowledge_requirements, observable_tasks, success_criteria, context, criticality, target_level, evidence_requirements, version, status, created_by, created_at, updated_at.
 
 ### skills
 id, code, name, description, category, skill_type.

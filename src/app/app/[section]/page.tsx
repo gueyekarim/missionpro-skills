@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 const sections: Record<string, { title: string; description: string }> = {
-  capabilities: { title: "Capabilities", description: "Le Capability Registry et le Capability Builder seront activés au Sprint 1." },
+  capabilities: { title: "Capabilities", description: "Le Capability Registry et le Capability Builder sont disponibles." },
   path: { title: "My Path", description: "Le parcours personnalisé sera activé après le diagnostic au Sprint 3." },
   nova: { title: "NOVA", description: "Le socle serveur NOVA est disponible dans System status ; l’expérience Tutor viendra plus tard." },
   practice: { title: "Practice", description: "Le Practice Lab et les challenges professionnels sont explicitement différés." },

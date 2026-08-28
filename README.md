@@ -34,13 +34,22 @@ Le scénario de référence est : **« Être capable d'identifier et prioriser l
 
 MissionPro Skills vise à relier apprentissage, pratique, travail réel, preuves et performance, pour les individus puis les organisations.
 
-## Sprint 0 — démarrage développeur
+## Sprint 1 — Capability Registry & Builder
 
-Le dépôt contient le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
+La route protégée `/app/capabilities` transforme une intention professionnelle en fiche structurée
+avec NOVA Architect. La fiche comprend outcomes, skills réutilisables, connaissances, tâches
+observables, niveau cible, critères de réussite et preuves attendues. L’utilisateur peut la régénérer,
+l’éditer puis l’accepter pour la persister dans le Capability Registry.
+
+Le rapport de vérification Sprint 1 est disponible dans
+[`docs/SPRINT_1_EVIDENCE.md`](docs/SPRINT_1_EVIDENCE.md).
+
+## Démarrage développeur
+
+Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
 authentification individuelle par session HttpOnly, navigation protégée et NOVA Orchestrator
-server-side. Les pages Capabilities, My Path, NOVA, Practice, Evidence et Passport sont des
-placeholders de navigation ; elles ne constituent pas encore le Capability Builder, le diagnostic,
-le Practice Lab ou le Passport des sprints suivants.
+server-side. Capabilities est fonctionnel au Sprint 1 ; My Path, NOVA Tutor, Practice, Evidence et
+Passport restent des placeholders pour les sprints suivants.
 
 ### Prérequis
 

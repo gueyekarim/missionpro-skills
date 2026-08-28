@@ -34,6 +34,20 @@ async function main() {
       capabilityType: REFERENCE_CAPABILITY.capabilityType,
       purpose: REFERENCE_CAPABILITY.purpose,
       businessOutcome: REFERENCE_CAPABILITY.businessOutcome,
+      sourceIntent: "Être capable d’identifier et prioriser les risques d’un projet public.",
+      outcomes: [
+        "Décider quelles menaces nécessitent une action de pilotage.",
+        "Sécuriser l’atteinte des résultats du projet public."
+      ],
+      knowledgeRequirements: [
+        "Cycle de vie et gouvernance d’un projet public.",
+        "Probabilité, impact, criticité et stratégies de réponse."
+      ],
+      observableTasks: [
+        "Construire une matrice de risques contextualisée.",
+        "Justifier la priorité et le responsable de chaque risque.",
+        "Proposer une réponse proportionnée à la criticité."
+      ],
       successCriteria: [...REFERENCE_CAPABILITY.successCriteria],
       context: REFERENCE_CAPABILITY.context,
       criticality: REFERENCE_CAPABILITY.criticality,
@@ -48,6 +62,20 @@ async function main() {
       capabilityType: REFERENCE_CAPABILITY.capabilityType,
       purpose: REFERENCE_CAPABILITY.purpose,
       businessOutcome: REFERENCE_CAPABILITY.businessOutcome,
+      sourceIntent: "Être capable d’identifier et prioriser les risques d’un projet public.",
+      outcomes: [
+        "Décider quelles menaces nécessitent une action de pilotage.",
+        "Sécuriser l’atteinte des résultats du projet public."
+      ],
+      knowledgeRequirements: [
+        "Cycle de vie et gouvernance d’un projet public.",
+        "Probabilité, impact, criticité et stratégies de réponse."
+      ],
+      observableTasks: [
+        "Construire une matrice de risques contextualisée.",
+        "Justifier la priorité et le responsable de chaque risque.",
+        "Proposer une réponse proportionnée à la criticité."
+      ],
       successCriteria: [...REFERENCE_CAPABILITY.successCriteria],
       context: REFERENCE_CAPABILITY.context,
       criticality: REFERENCE_CAPABILITY.criticality,
@@ -57,9 +85,9 @@ async function main() {
   });
 
   const skillSeeds = [
-    ["RISK-CONTEXT", "Analyser le contexte du projet", "analysis"],
-    ["RISK-QUALIFICATION", "Qualifier probabilité et impact", "analysis"],
-    ["RISK-PRIORITIZATION", "Prioriser et justifier les réponses", "decision"]
+    ["SKILL-RISK-CONTEXT", "Analyser le contexte du projet", "analysis"],
+    ["SKILL-RISK-QUALIFICATION", "Qualifier probabilité et impact", "analysis"],
+    ["SKILL-RISK-PRIORITIZATION", "Prioriser et justifier les réponses", "decision"]
   ] as const;
   for (const [code, name, category] of skillSeeds) {
     const skill = await db.skill.upsert({
