@@ -40,6 +40,14 @@ Avant une intervention significative, NOVA doit pouvoir récupérer :
 
 Le contrat répond à six questions : Who are you? What are you trying to become capable of doing? Where are you now? Where must you get to? What have you demonstrated? What should happen next?
 
+Sprint 3B enrichit le contrat avec les données utiles au tutorat :
+- skills, connaissances, tâches observables et preuves attendues de la Capability ;
+- Personal Capability Path et activité courante ;
+- événements pédagogiques récents sans contenu conversationnel ;
+- question ou tâche courante, utilisée uniquement pendant la requête.
+
+Le mode `tutor` produit une réponse structurée validée couvrant explication, questionnement, exemple, raisonnement guidé, feedback, exercice court, application professionnelle et prochaine action. Les modes d'expérience `LEARN`, `ASK NOVA` et `MY WORK` passent tous par le même orchestrateur serveur.
+
 ## Structured AI outputs
 Les appels destinés à créer ou modifier des objets métier doivent utiliser des sorties structurées validables (JSON/schema) plutôt qu'un texte libre. Les évaluations doivent conserver rubric, critères, scores, justification, limites et recommandation.
 

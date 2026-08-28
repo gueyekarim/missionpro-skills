@@ -45,6 +45,11 @@ id, user_id, capability_id, diagnostic_session_id, status, observed_level, targe
 ### personal_path_items
 id, path_id, capability_id, learning_unit_id, sequence, stage, title, objective, activity, expected_output, completion_condition, gap_rationale, skill_code, target_level, status, completed_at, created_at.
 
+### tutor_interactions
+id, user_id, capability_id, path_id, path_item_id, mode, action, observed_level, target_level, stage, created_at.
+
+Les interactions Tutor conservent uniquement un événement pédagogique minimal. Elles ne stockent ni question, ni réponse, ni message, ni prompt, ni contenu de conversation.
+
 ### agents
 id, name, role, system_prompt, agent_type, status.
 
@@ -72,7 +77,7 @@ organizations, missions, outcomes, outcome_capabilities, simulations, capability
 5. System Mastery — concevoir, transmettre et gouverner le dispositif.
 
 ## MVP database scope
-Implémentation jusqu’au Sprint 3A : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions, personal_capability_paths, personal_path_items.
+Implémentation jusqu’au Sprint 3B : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions, personal_capability_paths, personal_path_items, tutor_interactions.
 
 ## Core invariant
 Une progression de maîtrise doit être traçable jusqu'aux évaluations et preuves qui la justifient. L'auto-évaluation seule ne peut produire un statut de maîtrise vérifiée.

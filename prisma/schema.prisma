@@ -19,6 +19,7 @@ model User {
   capabilities    UserCapability[]
   diagnosticSessions DiagnosticSession[]
   personalPaths    PersonalCapabilityPath[]
+  tutorInteractions TutorInteraction[]
   sessions        Session[]
 
   @@map("users")
@@ -56,6 +57,7 @@ model Capability {
   diagnosticSessions  DiagnosticSession[]
   personalPaths       PersonalCapabilityPath[]
   personalPathItems   PersonalPathItem[]
+  tutorInteractions   TutorInteraction[]
 
   @@map("capabilities")
 }
@@ -234,6 +236,7 @@ model PersonalCapabilityPath {
   capability          Capability         @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
   diagnosticSession   DiagnosticSession  @relation(fields: [diagnosticSessionId], references: [id], onDelete: Cascade)
   items               PersonalPathItem[]
+  tutorInteractions   TutorInteraction[]
 
   @@index([userId, capabilityId, createdAt])
   @@map("personal_capability_paths")
@@ -260,10 +263,32 @@ model PersonalPathItem {
   path                PersonalCapabilityPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
   capability          Capability            @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
   learningUnit        LearningUnit?         @relation(fields: [learningUnitId], references: [id], onDelete: SetNull)
+  tutorInteractions   TutorInteraction[]
 
   @@unique([pathId, sequence])
   @@index([capabilityId])
   @@map("personal_path_items")
+}
+
+model TutorInteraction {
+  id           String                @id @default(uuid()) @db.Uuid
+  userId       String                @db.Uuid
+  capabilityId String                @db.Uuid
+  pathId       String?               @db.Uuid
+  pathItemId   String?               @db.Uuid
+  mode         String
+  action       String
+  observedLevel Int
+  targetLevel  Int
+  stage        String?
+  createdAt    DateTime              @default(now())
+  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capability   Capability            @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  path         PersonalCapabilityPath? @relation(fields: [pathId], references: [id], onDelete: SetNull)
+  pathItem     PersonalPathItem?     @relation(fields: [pathItemId], references: [id], onDelete: SetNull)
+
+  @@index([userId, capabilityId, createdAt])
+  @@map("tutor_interactions")
 }
 
 model Agent {

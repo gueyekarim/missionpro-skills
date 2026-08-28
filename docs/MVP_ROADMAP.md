@@ -42,7 +42,10 @@ Valider une boucle complète de développement capacitaire avant d'ajouter marke
 **Exit:** un diagnostic devient un parcours personnel enregistré, ciblé sur les gaps et distinct de la maîtrise.
 
 ## Sprint 3B — NOVA Tutor
-- NOVA Tutor contextualisé par le Context Contract.
+- NOVA Tutor contextualisé par le Context Contract ;
+- modes LEARN, ASK NOVA et MY WORK ;
+- réponses structurées adaptées au niveau et à l’étape du parcours ;
+- événements pédagogiques minimaux sans stockage du contenu conversationnel.
 
 **Exit:** NOVA enseigne à partir du niveau réel et du parcours enregistré.
 

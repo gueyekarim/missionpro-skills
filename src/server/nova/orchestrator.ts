@@ -7,11 +7,13 @@ import {
   capabilityDraftSchema,
   diagnosticOutputSchema,
   personalPathOutputSchema,
+  tutorOutputSchema,
   novaSmokeOutputSchema,
   type ContextContract,
   type CapabilityDraft,
   type DiagnosticOutput,
   type PersonalPathOutput,
+  type TutorOutput,
   type NovaMode,
   type NovaSmokeOutput
 } from "./context-contract";
@@ -22,7 +24,7 @@ type NovaProvider = (input: {
   mode: NovaMode;
   context: ContextContract;
   task: string;
-  output: "smoke" | "capability" | "diagnostic" | "path";
+  output: "smoke" | "capability" | "diagnostic" | "path" | "tutor";
 }) => Promise<unknown>;
 
 const mockProvider: NovaProvider = async ({ mode, context, task, output }) => {
@@ -131,6 +133,42 @@ const mockProvider: NovaProvider = async ({ mode, context, task, output }) => {
   if (output === "path") {
     const facts = JSON.parse(task) as Omit<PersonalPathOutput, "provenance">;
     return { ...facts, provenance: "AI assisted" };
+  }
+
+  if (output === "tutor") {
+    const input = JSON.parse(task) as { mode: string; question: string };
+    const observed = context.observedMasteryLevel ?? 1;
+    const target = context.targetMasteryLevel ?? 3;
+    const stage = String(context.currentPathItem?.stage ?? "learn");
+    const advanced = observed >= target || observed >= 3;
+    const focus = advanced
+      ? "l’arbitrage et la justification d’une réponse proportionnée"
+      : "le repérage du contexte, de la probabilité et de l’impact";
+    return {
+      mode: input.mode,
+      response: input.mode === "MY WORK"
+        ? `Pour votre travail, partez de la situation réelle décrite et ${focus}. Ne cherchez pas une liste générique : reliez chaque décision à un risque, un critère et un responsable.`
+        : input.mode === "ASK NOVA"
+          ? `Votre question est traitée au niveau ${observed}/5, dans l’étape ${stage}. Commencez par isoler les faits observables, puis utilisez ${focus}.`
+          : `À votre niveau ${observed}/5, travaillez ${focus}. La cible est ${target}/5 : l’objectif n’est pas de relire ce qui est déjà démontré, mais de produire un choix explicable dans votre contexte.`,
+      teachingPoint: `Point clé pour cette étape : ${focus}.`,
+      questionForLearner: `Quel élément de votre contexte justifie le choix que vous feriez ici ?`,
+      examples: advanced
+        ? ["Un risque fournisseur devient prioritaire lorsque son impact sur le chemin critique est explicité et relié à une réponse."]
+        : ["Un retard fournisseur est d’abord relié au contexte, puis qualifié par probabilité et impact avant toute réponse."],
+      reasoningSteps: [
+        "Nommer le contexte et le résultat menacé.",
+        "Qualifier le signal avec un critère explicite.",
+        "Choisir une réponse et nommer le responsable."
+      ],
+      feedback: `La réponse doit être reliée à l’étape ${stage} et à la Capability, pas à une notion isolée.`,
+      professionalConnection: `Appliquez ce raisonnement à une décision réelle de votre projet public : ${input.question.slice(0, 220)}.`,
+      suggestedExercise: advanced
+        ? "Prenez un risque ambigu et défendez deux priorisations possibles avant de choisir."
+        : "Construisez une mini-fiche avec contexte, probabilité, impact et première réponse.",
+      nextAction: "Produire la trace attendue pour l’étape actuelle, puis la comparer à sa condition de complétion.",
+      provenance: "AI assisted"
+    };
   }
 
   return {
@@ -258,11 +296,31 @@ const personalPathJsonSchema = {
   required: ["capabilityCode", "observedLevel", "targetLevel", "capabilityGap", "summary", "items", "provenance"]
 };
 
+const tutorJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    mode: { type: "string", enum: ["LEARN", "ASK NOVA", "MY WORK"] },
+    response: { type: "string" },
+    teachingPoint: { type: "string" },
+    questionForLearner: { type: "string" },
+    examples: { type: "array", items: { type: "string" } },
+    reasoningSteps: { type: "array", items: { type: "string" } },
+    feedback: { type: "string" },
+    professionalConnection: { type: "string" },
+    suggestedExercise: { type: "string" },
+    nextAction: { type: "string" },
+    provenance: { type: "string", enum: ["AI assisted"] }
+  },
+  required: ["mode", "response", "teachingPoint", "questionForLearner", "examples", "reasoningSteps", "feedback", "professionalConnection", "suggestedExercise", "nextAction", "provenance"]
+};
+
 async function openAiProvider({ mode, context, task, output }: Parameters<NovaProvider>[0]): Promise<unknown> {
   const config = getServerConfig();
   const isCapability = output === "capability";
    const isDiagnostic = output === "diagnostic";
   const isPath = output === "path";
+  const isTutor = output === "tutor";
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -275,9 +333,9 @@ async function openAiProvider({ mode, context, task, output }: Parameters<NovaPr
       response_format: {
         type: "json_schema",
         json_schema: {
-           name: isCapability ? "nova_capability_draft" : isDiagnostic ? "nova_diagnostic_output" : isPath ? "nova_personal_capability_path" : "nova_smoke_output",
+           name: isCapability ? "nova_capability_draft" : isDiagnostic ? "nova_diagnostic_output" : isPath ? "nova_personal_capability_path" : isTutor ? "nova_tutor_response" : "nova_smoke_output",
           strict: true,
-           schema: isCapability ? capabilityDraftJsonSchema : isDiagnostic ? diagnosticJsonSchema : isPath ? personalPathJsonSchema : {
+           schema: isCapability ? capabilityDraftJsonSchema : isDiagnostic ? diagnosticJsonSchema : isPath ? personalPathJsonSchema : isTutor ? tutorJsonSchema : {
             type: "object",
             additionalProperties: false,
             properties: {
@@ -358,6 +416,17 @@ export class NovaOrchestrator {
     } catch (error) {
       console.error("[nova] path generation failure", error instanceof Error ? error.message : "unknown error");
       throw new Error("NOVA Mentor could not produce a valid personal capability path");
+    }
+  }
+
+  async runTutor(context: ContextContract, task: string): Promise<TutorOutput> {
+    const parsedContext = contextContractSchema.parse(context);
+    try {
+      const raw = await this.provider({ mode: "tutor", context: parsedContext, task, output: "tutor" });
+      return tutorOutputSchema.parse(raw);
+    } catch (error) {
+      console.error("[nova] tutor failure", error instanceof Error ? error.message : "unknown error");
+      throw new Error("NOVA Tutor could not produce a valid contextual response");
     }
   }
 }

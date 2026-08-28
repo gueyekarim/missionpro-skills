@@ -21,6 +21,8 @@ Le parcours est généré depuis le dernier diagnostic, les gaps, les signaux ob
 ## Screen 5 — NOVA Tutor
 Trois espaces : Learn, Ask NOVA et My Work. NOVA utilise le Context Contract : utilisateur, rôle, capability, niveau observé, cible, historique, preuves et tâche courante.
 
+Le serveur complète ce contexte avec les skills, le dernier diagnostic, le Personal Capability Path et l’activité courante. NOVA retourne une explication, un point d’apprentissage, une question, un exemple, un raisonnement guidé, un feedback, un exercice court, une connexion au travail et la prochaine action. Le Tutor n’enregistre pas le texte de la conversation et ne produit ni preuve, ni évaluation formelle, ni changement de maîtrise.
+
 ## Screen 6 — Practice Lab
 Modes MVP : Exercise, Case, Challenge et Real Work. Les simulations multi-agents complètes sont post-MVP.
 

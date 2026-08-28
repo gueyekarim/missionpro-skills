@@ -67,11 +67,22 @@ la maîtrise, qui exige toujours preuves et évaluation.
 Le rapport de vérification est disponible dans
 [`docs/SPRINT_3A_EVIDENCE.md`](docs/SPRINT_3A_EVIDENCE.md).
 
+## Sprint 3B — NOVA Tutor
+
+La route protégée `/app/nova` propose les modes LEARN, ASK NOVA et MY WORK. Le serveur construit le
+Context Contract depuis l’utilisateur, la Capability et ses skills, le diagnostic, le Personal
+Capability Path et l’activité courante. NOVA répond avec une sortie structurée adaptée au niveau et
+à la position dans le parcours. Seul un événement pédagogique minimal est enregistré ; le texte de
+la question et de la réponse ne l’est pas.
+
+Le rapport de vérification est disponible dans
+[`docs/SPRINT_3B_EVIDENCE.md`](docs/SPRINT_3B_EVIDENCE.md).
+
 ## Démarrage développeur
 
 Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
 authentification individuelle par session HttpOnly, navigation protégée et NOVA Orchestrator
-server-side. Capabilities, Diagnostic et My Path sont fonctionnels ; NOVA Tutor, Practice, Evidence
+server-side. Capabilities, Diagnostic, My Path et NOVA Tutor sont fonctionnels ; Practice, Evidence
 et Passport restent des placeholders pour les sprints suivants.
 
 ### Prérequis

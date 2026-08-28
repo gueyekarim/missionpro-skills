@@ -6,18 +6,19 @@ import bcrypt from "bcryptjs";
 import { persistCapabilityDraft } from "../src/server/capabilities";
 import { persistDiagnostic } from "../src/server/diagnostics";
 import { persistPersonalPath } from "../src/server/paths";
+import { generateTutorResponse } from "../src/server/tutor";
 
 const hasDatabase = Boolean(process.env.DATABASE_URL);
 const db = new PrismaClient();
 
-describe("Sprint 0/1/2/3A PostgreSQL integration", () => {
+describe("Sprint 0/1/2/3A/3B PostgreSQL integration", () => {
   test("migration tables and repeatable seed are present", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
     const tables = await db.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename FROM pg_catalog.pg_tables
       WHERE schemaname = 'public'
-      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions', 'personal_capability_paths', 'personal_path_items')
+      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions', 'personal_capability_paths', 'personal_path_items', 'tutor_interactions')
     `;
-    assert.equal(tables.length, 13);
+    assert.equal(tables.length, 14);
     assert.equal(await db.masteryLevel.count(), 5);
     assert.ok(await db.capability.findUnique({ where: { code: "CAP-PROJ-RISK-001" } }));
     assert.equal(await db.agent.count({ where: { name: "NOVA Orchestrator" } }), 1);
@@ -112,7 +113,7 @@ describe("Sprint 0/1/2/3A PostgreSQL integration", () => {
     await db.user.delete({ where: { id: user.id } });
   });
 
-  test("two users receive persisted, different paths for the same Capability", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
+  test("two users receive different persisted paths and contextual Tutor responses for the same Capability", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
     const capability = await db.capability.findUniqueOrThrow({ where: { code: "CAP-PROJ-RISK-001" } });
     const [foundationUser, advancedUser] = await Promise.all([
       db.user.create({ data: { email: `path-foundation-${crypto.randomUUID()}@missionpro.test`, name: "Foundation User" } }),
@@ -148,6 +149,24 @@ describe("Sprint 0/1/2/3A PostgreSQL integration", () => {
     assert.equal(await db.userCapability.findUniqueOrThrow({
       where: { userId_capabilityId: { userId: advancedUser.id, capabilityId: capability.id } }
     }).then((profile) => profile.observedLevel), 3);
+
+    const question = "Comment prioriser un risque fournisseur ?";
+    const foundationTutor = await generateTutorResponse({
+      capabilityId: capability.id,
+      pathItemId: foundationPath.path.items[0].id,
+      mode: "LEARN",
+      question
+    }, foundationUser.id);
+    const advancedTutor = await generateTutorResponse({
+      capabilityId: capability.id,
+      pathItemId: advancedPath.path.items.find((item) => item.stage === "challenge")?.id,
+      mode: "LEARN",
+      question
+    }, advancedUser.id);
+    assert.notEqual(foundationTutor.output.response, advancedTutor.output.response);
+    assert.match(foundationTutor.output.teachingPoint, /repérage du contexte/i);
+    assert.match(advancedTutor.output.teachingPoint, /arbitrage/i);
+    assert.equal(await db.tutorInteraction.count({ where: { userId: { in: [foundationUser.id, advancedUser.id] } } }), 2);
 
     await db.user.deleteMany({ where: { id: { in: [foundationUser.id, advancedUser.id] } } });
   });

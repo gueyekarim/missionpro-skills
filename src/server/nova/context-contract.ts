@@ -18,14 +18,21 @@ export const contextContractSchema = z.object({
       id: z.string().optional(),
       code: z.string().optional(),
       name: z.string().optional(),
-      description: z.string().optional()
+      description: z.string().optional(),
+      skills: z.array(z.record(z.unknown())).optional(),
+      knowledgeRequirements: z.array(z.string()).optional(),
+      observableTasks: z.array(z.string()).optional(),
+      evidenceRequirements: z.array(z.string()).optional()
     })
     .optional(),
   observedMasteryLevel: z.number().int().min(1).max(5).optional(),
   targetMasteryLevel: z.number().int().min(1).max(5).optional(),
   currentLearningUnit: z.record(z.unknown()).optional(),
+  currentPath: z.record(z.unknown()).optional(),
+  currentPathItem: z.record(z.unknown()).optional(),
   recentAssessments: z.array(z.record(z.unknown())).default([]),
   evidenceAvailable: z.array(z.record(z.unknown())).default([]),
+  previousLearningActivities: z.array(z.record(z.unknown())).optional(),
   weaknessesOrGaps: z.array(z.string()).default([]),
   recommendedNextAction: z.string().optional(),
   currentTask: z.string().optional()
@@ -126,3 +133,30 @@ export const personalPathOutputSchema = z.object({
 
 export type PersonalPathItem = z.infer<typeof personalPathItemSchema>;
 export type PersonalPathOutput = z.infer<typeof personalPathOutputSchema>;
+
+export const tutorModes = ["LEARN", "ASK NOVA", "MY WORK"] as const;
+export type TutorMode = (typeof tutorModes)[number];
+
+export const tutorRequestSchema = z.object({
+  capabilityId: z.string().uuid(),
+  pathItemId: z.string().uuid().optional(),
+  mode: z.enum(tutorModes),
+  question: z.string().trim().min(1).max(4000)
+});
+
+export const tutorOutputSchema = z.object({
+  mode: z.enum(tutorModes),
+  response: z.string().min(1).max(4000),
+  teachingPoint: z.string().min(1).max(1000),
+  questionForLearner: z.string().min(1).max(1000),
+  examples: z.array(z.string().min(1).max(1000)).max(5),
+  reasoningSteps: z.array(z.string().min(1).max(1000)).max(8),
+  feedback: z.string().min(1).max(1500),
+  professionalConnection: z.string().min(1).max(1500),
+  suggestedExercise: z.string().min(1).max(1500),
+  nextAction: z.string().min(1).max(1000),
+  provenance: z.literal("AI assisted")
+});
+
+export type TutorRequest = z.infer<typeof tutorRequestSchema>;
+export type TutorOutput = z.infer<typeof tutorOutputSchema>;
