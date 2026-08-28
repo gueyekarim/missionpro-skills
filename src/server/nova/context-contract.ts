@@ -70,3 +70,29 @@ export const capabilityDraftSchema = z.object({
 
 export type CapabilitySkillDraft = z.infer<typeof capabilitySkillDraftSchema>;
 export type CapabilityDraft = z.infer<typeof capabilityDraftSchema>;
+
+export const diagnosticEvidenceSchema = z.object({
+  dimension: z.string().min(1).max(100),
+  method: z.string().min(1).max(100),
+  summary: z.string().min(1).max(1000),
+  score: z.number().int().min(0).max(10),
+  maxScore: z.number().int().min(1).max(10),
+  observedSignals: z.array(z.string().min(1).max(200)).max(12)
+});
+
+export const diagnosticOutputSchema = z.object({
+  observedLevel: z.number().int().min(1).max(5),
+  targetLevel: z.number().int().min(1).max(5),
+  capabilityGap: z.number().int().min(0).max(4),
+  strengths: z.array(z.string().min(1).max(500)).max(12),
+  weaknesses: z.array(z.string().min(1).max(500)).max(12),
+  missingEvidence: z.array(z.string().min(1).max(500)).max(12),
+  evidenceSupportingDiagnosis: z.array(diagnosticEvidenceSchema).min(1).max(12),
+  explanation: z.string().min(1).max(3000),
+  recommendedPriorities: z.array(z.string().min(1).max(500)).min(1).max(12),
+  provenance: z.literal("AI assessed"),
+  confidenceScore: z.number().min(0).max(1)
+});
+
+export type DiagnosticEvidence = z.infer<typeof diagnosticEvidenceSchema>;
+export type DiagnosticOutput = z.infer<typeof diagnosticOutputSchema>;

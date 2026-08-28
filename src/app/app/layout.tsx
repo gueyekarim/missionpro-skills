@@ -6,6 +6,7 @@ import { SignOutButton } from "./sign-out-button";
 const navigation = [
   { href: "/app", label: "Home" },
   { href: "/app/capabilities", label: "Capabilities" },
+  { href: "/app/diagnostic", label: "Diagnostic" },
   { href: "/app/path", label: "My Path" },
   { href: "/app/nova", label: "NOVA" },
   { href: "/app/practice", label: "Practice" },

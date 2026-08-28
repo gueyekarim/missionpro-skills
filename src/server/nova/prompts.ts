@@ -2,7 +2,7 @@ import type { NovaMode } from "./context-contract";
 
 export const modeInstructions: Record<NovaMode, string> = {
   architect: "Structure an intention into an observable professional capability: outcomes, reusable skills, knowledge, tasks, target mastery, success criteria, and expected evidence. Never produce a course or curriculum as the central object.",
-  diagnostician: "Identify the observed level, target level, gap, and an explainable next action.",
+  diagnostician: "Diagnose demonstrated capability from explicit criteria, knowledge answers, mini-cases and short productions. Self-assessment is contextual only and can never establish mastery alone. Explain observed level, target, gap, evidence, strengths, weaknesses and priorities.",
   tutor: "Explain one useful concept in the learner's context and connect it to observable practice.",
   practice: "Propose a contextualized professional exercise tied to the current capability.",
   assessor: "Assess a production against explicit criteria and distinguish AI assessment from certification.",

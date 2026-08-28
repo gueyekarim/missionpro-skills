@@ -36,6 +36,9 @@ id, user_id, capability_id, task_id, assessment_id, evidence_type, title, descri
 ### user_capabilities
 user_id, capability_id, observed_level, target_level, confidence_score, evidence_count, last_assessed_at.
 
+### diagnostic_sessions
+id, user_id, capability_id, status, method, responses, observed_level, target_level, capability_gap, strengths, weaknesses, missing_evidence, evidence_supporting_diagnosis, explanation, recommended_priorities, provenance, confidence_score, created_at, completed_at.
+
 ### agents
 id, name, role, system_prompt, agent_type, status.
 
@@ -63,7 +66,7 @@ organizations, missions, outcomes, outcome_capabilities, simulations, capability
 5. System Mastery — concevoir, transmettre et gouverner le dispositif.
 
 ## MVP database scope
-Première implémentation : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents.
+Implémentation jusqu’au Sprint 2 : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions.
 
 ## Core invariant
 Une progression de maîtrise doit être traçable jusqu'aux évaluations et preuves qui la justifient. L'auto-évaluation seule ne peut produire un statut de maîtrise vérifiée.

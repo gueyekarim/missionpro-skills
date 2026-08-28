@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 type Skill = {
@@ -258,6 +259,7 @@ export function CapabilityBuilder({
                 <p className="mono">{draft.code}</p>
               </div>
               <div className="profile-actions">
+                {selectedCapability && <Link className="button secondary" href="/app/diagnostic">Run diagnostic</Link>}
                 {!editing && selectedCapability && (
                   <button className="button secondary" type="button" onClick={() => setEditing(true)}>Edit</button>
                 )}

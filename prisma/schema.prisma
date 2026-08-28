@@ -17,6 +17,7 @@ model User {
   createdCapabilities Capability[]   @relation("CapabilityCreator")
   evidence        Evidence[]
   capabilities    UserCapability[]
+  diagnosticSessions DiagnosticSession[]
   sessions        Session[]
 
   @@map("users")
@@ -51,6 +52,7 @@ model Capability {
   assessments         CapabilityAssessment[]
   evidence            Evidence[]
   userCapabilities    UserCapability[]
+  diagnosticSessions  DiagnosticSession[]
 
   @@map("capabilities")
 }
@@ -178,6 +180,33 @@ model UserCapability {
 
   @@id([userId, capabilityId])
   @@map("user_capabilities")
+}
+
+model DiagnosticSession {
+  id                          String     @id @default(uuid()) @db.Uuid
+  userId                      String     @db.Uuid
+  capabilityId                String     @db.Uuid
+  status                      String     @default("completed")
+  method                      Json
+  responses                   Json
+  observedLevel               Int
+  targetLevel                 Int
+  capabilityGap               Int
+  strengths                   Json
+  weaknesses                  Json
+  missingEvidence             Json
+  evidenceSupportingDiagnosis Json
+  explanation                 String
+  recommendedPriorities       Json
+  provenance                 String
+  confidenceScore             Decimal?   @db.Decimal(5, 2)
+  createdAt                   DateTime   @default(now())
+  completedAt                 DateTime?
+  user                        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capability                  Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+
+  @@index([userId, capabilityId, createdAt])
+  @@map("diagnostic_sessions")
 }
 
 model Agent {

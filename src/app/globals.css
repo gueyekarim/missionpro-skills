@@ -141,6 +141,40 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18, 59, 112,
 .mastery-level p, .mastery-level li { font-size: 12px; line-height: 1.45; }
 .mastery-level ul { padding-left: 17px; margin: 9px 0 0; color: var(--muted); }
 .empty-profile { min-height: 260px; display: grid; align-content: center; }
+.diagnostic-page { display: grid; gap: 20px; }
+.diagnostic-hero { display: grid; gap: 11px; }
+.diagnostic-hero h1, .diagnostic-hero p { margin-bottom: 0; }
+.diagnostic-hero select { max-width: 760px; margin-top: 4px; }
+.diagnostic-method, .diagnostic-form, .evidence-card { display: grid; gap: 20px; }
+.method-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.method-grid > div { border: 1px solid var(--line); border-radius: 11px; padding: 15px; }
+.method-grid strong { display: block; margin-top: 10px; }
+.method-grid p { font-size: 13px; margin: 5px 0 0; }
+.method-number { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: white; font-size: 12px; font-weight: 800; }
+.diagnostic-form { max-width: 900px; }
+.diagnostic-field { display: grid; gap: 8px; }
+.diagnostic-field > span { color: var(--ink); font-size: 14px; font-weight: 700; }
+.diagnostic-field > strong { font-size: 15px; line-height: 1.5; }
+.diagnostic-field small { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.diagnostic-result { display: grid; gap: 16px; }
+.result-summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 420px); gap: 24px; align-items: center; }
+.result-summary h2 { margin-top: 0; }
+.result-summary > div > p { margin-bottom: 0; }
+.result-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.result-levels > div { background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 13px; }
+.result-levels span, .result-levels small { display: block; color: var(--muted); font-size: 11px; }
+.result-levels strong { display: block; color: var(--blue); font-size: 27px; margin: 4px 0; }
+.result-levels .gap-value { background: #fff7d6; border-color: #f5d76e; }
+.formula { grid-column: 1 / -1; margin: 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--blue); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.result-list h3 { margin: 0; }
+.result-list ul { margin: 14px 0 0; padding-left: 18px; }
+.result-list li { margin: 8px 0; color: var(--muted); line-height: 1.45; font-size: 14px; }
+.evidence-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.evidence-grid > div { border: 1px solid var(--line); border-radius: 10px; padding: 13px; }
+.evidence-grid strong { display: block; }
+.evidence-grid span { display: block; color: var(--blue); font-size: 12px; font-weight: 700; margin-top: 5px; }
+.evidence-grid p { font-size: 12px; margin: 8px 0 0; }
 @media (max-width: 780px) {
   .shell { grid-template-columns: 1fr; }
   .sidebar { padding: 14px; }
@@ -156,4 +190,6 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18, 59, 112,
   .profile-header { display: grid; }
   .mastery-levels { grid-template-columns: 1fr; }
   .field-grid, .skill-meta { grid-template-columns: 1fr; }
+  .method-grid, .result-grid, .evidence-grid { grid-template-columns: 1fr; }
+  .result-summary { grid-template-columns: 1fr; }
 }

@@ -4,18 +4,19 @@ import crypto from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { persistCapabilityDraft } from "../src/server/capabilities";
+import { persistDiagnostic } from "../src/server/diagnostics";
 
 const hasDatabase = Boolean(process.env.DATABASE_URL);
 const db = new PrismaClient();
 
-describe("Sprint 0/1 PostgreSQL integration", () => {
+describe("Sprint 0/1/2 PostgreSQL integration", () => {
   test("migration tables and repeatable seed are present", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
     const tables = await db.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename FROM pg_catalog.pg_tables
       WHERE schemaname = 'public'
-      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents')
+      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions')
     `;
-    assert.equal(tables.length, 10);
+    assert.equal(tables.length, 11);
     assert.equal(await db.masteryLevel.count(), 5);
     assert.ok(await db.capability.findUnique({ where: { code: "CAP-PROJ-RISK-001" } }));
     assert.equal(await db.agent.count({ where: { name: "NOVA Orchestrator" } }), 1);
@@ -79,6 +80,34 @@ describe("Sprint 0/1 PostgreSQL integration", () => {
 
     await db.capability.delete({ where: { id: created.id } });
     await db.skill.delete({ where: { code: skillCode } });
+    await db.user.delete({ where: { id: user.id } });
+  });
+
+  test("diagnostic sessions persist explainable results and update the user capability profile", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
+    const capability = await db.capability.findUniqueOrThrow({ where: { code: "CAP-PROJ-RISK-001" } });
+    const user = await db.user.create({
+      data: { email: `diagnostic-${crypto.randomUUID()}@missionpro.test`, name: "Diagnostic User" }
+    });
+    const saved = await persistDiagnostic({
+      capabilityId: capability.id,
+      responses: {
+        selfAssessment: 5,
+        knowledgeAnswer: "Je consulte les documents et échange avec l’équipe.",
+        miniCaseAnswer: "Je réunis les parties prenantes et prépare une décision.",
+        productionAnswer: "Je rédige une note synthétique à partir des échanges."
+      }
+    }, user.id);
+
+    assert.equal(saved.result.targetLevel - saved.result.observedLevel, saved.result.capabilityGap);
+    assert.equal(saved.result.observedLevel, 1);
+    assert.equal(saved.result.provenance, "AI assessed");
+    assert.equal(saved.result.evidenceSupportingDiagnosis.length, 3);
+    const profile = await db.userCapability.findUniqueOrThrow({
+      where: { userId_capabilityId: { userId: user.id, capabilityId: capability.id } }
+    });
+    assert.equal(profile.observedLevel, saved.result.observedLevel);
+    assert.equal(profile.targetLevel, saved.result.targetLevel);
+    assert.equal(profile.evidenceCount, 0);
     await db.user.delete({ where: { id: user.id } });
   });
 });

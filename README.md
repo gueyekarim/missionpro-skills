@@ -44,12 +44,24 @@ l’éditer puis l’accepter pour la persister dans le Capability Registry.
 Le rapport de vérification Sprint 1 est disponible dans
 [`docs/SPRINT_1_EVIDENCE.md`](docs/SPRINT_1_EVIDENCE.md).
 
+## Sprint 2 — Diagnostic Engine
+
+La route protégée `/app/diagnostic` combine auto-évaluation structurée, question de connaissances,
+mini-cas et production courte. Les trois activités observables déterminent le niveau observé ;
+l’auto-évaluation seule ne peut pas établir la maîtrise. NOVA diagnostician retourne une explication
+structurée, les forces, faiblesses, preuves manquantes et priorités, avec l’invariant :
+
+`Target Capability − Observed Capability = Capability Gap`.
+
+Le rapport de vérification est disponible dans
+[`docs/SPRINT_2_EVIDENCE.md`](docs/SPRINT_2_EVIDENCE.md).
+
 ## Démarrage développeur
 
 Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
 authentification individuelle par session HttpOnly, navigation protégée et NOVA Orchestrator
-server-side. Capabilities est fonctionnel au Sprint 1 ; My Path, NOVA Tutor, Practice, Evidence et
-Passport restent des placeholders pour les sprints suivants.
+server-side. Capabilities et Diagnostic sont fonctionnels ; My Path, NOVA Tutor, Practice, Evidence
+et Passport restent des placeholders pour les sprints suivants.
 
 ### Prérequis
 
