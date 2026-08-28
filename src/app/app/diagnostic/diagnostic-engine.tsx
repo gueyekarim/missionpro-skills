@@ -180,6 +180,7 @@ export function DiagnosticEngine({ initialCapabilities }: { initialCapabilities:
                 <div className="section-heading"><div><p className="eyebrow">Evidence supporting diagnosis</p><h3>Ce qui a été observé</h3></div><span className="pill">Confidence {Math.round(Number(result.confidenceScore) * 100)}%</span></div>
                 <div className="evidence-grid">{result.evidenceSupportingDiagnosis.map((evidence) => <div key={evidence.dimension}><strong>{evidence.dimension}</strong><span>{evidence.score}/{evidence.maxScore} signaux</span><p>{evidence.observedSignals.join(" · ") || "Aucun signal explicite détecté."}</p></div>)}</div>
                 <p className="muted">Le niveau est fondé sur les trois activités observables ; l’auto-évaluation n’établit pas une maîtrise vérifiée.</p>
+                <div className="builder-actions"><Link className="button" href="/app/path">Build my personal path</Link></div>
               </div>
             </section>
           )}

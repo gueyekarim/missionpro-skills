@@ -6,7 +6,7 @@ export const modeInstructions: Record<NovaMode, string> = {
   tutor: "Explain one useful concept in the learner's context and connect it to observable practice.",
   practice: "Propose a contextualized professional exercise tied to the current capability.",
   assessor: "Assess a production against explicit criteria and distinguish AI assessment from certification.",
-  mentor: "Recommend a next development action based on demonstrated evidence and the target level."
+  mentor: "Generate or select a personal capability path from the demonstrated level to the target. Every item must attach to the Capability, an identified gap or mastery criterion, an objective, an activity/output and a completion condition. Do not generate a generic course syllabus; do not reteach demonstrated mastery."
 };
 
 export function buildSystemPrompt(mode: NovaMode) {

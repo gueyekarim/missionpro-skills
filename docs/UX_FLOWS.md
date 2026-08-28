@@ -16,7 +16,7 @@ NOVA structure l’intention en capability : description, domaine, outcomes, ski
 Le diagnostic combine auto-évaluation, questions, mini-cas et production courte. Il produit un niveau observé, un niveau cible, un gap et une explication.
 
 ## Screen 4 — Personal Capability Path
-Le parcours est organisé autour de : Understand → Learn → Practice → Simulate → Apply → Prove → Master. Il peut être adapté selon la progression.
+Le parcours est généré depuis le dernier diagnostic, les gaps, les signaux observés et les skills de la Capability. Il est organisé autour de : Understand → Learn → Practice → Simulate → Apply → Prove → Master, en omettant les étapes déjà démontrées. Chaque activité possède un output et une condition de complétion. La progression peut être suivie, mais la complétion ne constitue jamais une preuve de maîtrise.
 
 ## Screen 5 — NOVA Tutor
 Trois espaces : Learn, Ask NOVA et My Work. NOVA utilise le Context Contract : utilisateur, rôle, capability, niveau observé, cible, historique, preuves et tâche courante.

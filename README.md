@@ -56,11 +56,22 @@ structurée, les forces, faiblesses, preuves manquantes et priorités, avec l’
 Le rapport de vérification est disponible dans
 [`docs/SPRINT_2_EVIDENCE.md`](docs/SPRINT_2_EVIDENCE.md).
 
+## Sprint 3A — Personal Capability Path
+
+La route protégée `/app/path` transforme le dernier diagnostic d’une Capability en parcours
+personnel persistant. Chaque étape reste traçable jusqu’à la Capability, au gap ou critère de
+maîtrise, à une skill, à un objectif, à une activité, à un output attendu et à une condition de
+complétion. Les étapes déjà démontrées sont omises ; la complétion du parcours reste distincte de
+la maîtrise, qui exige toujours preuves et évaluation.
+
+Le rapport de vérification est disponible dans
+[`docs/SPRINT_3A_EVIDENCE.md`](docs/SPRINT_3A_EVIDENCE.md).
+
 ## Démarrage développeur
 
 Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
 authentification individuelle par session HttpOnly, navigation protégée et NOVA Orchestrator
-server-side. Capabilities et Diagnostic sont fonctionnels ; My Path, NOVA Tutor, Practice, Evidence
+server-side. Capabilities, Diagnostic et My Path sont fonctionnels ; NOVA Tutor, Practice, Evidence
 et Passport restent des placeholders pour les sprints suivants.
 
 ### Prérequis

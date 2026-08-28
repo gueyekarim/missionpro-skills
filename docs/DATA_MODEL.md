@@ -39,6 +39,12 @@ user_id, capability_id, observed_level, target_level, confidence_score, evidence
 ### diagnostic_sessions
 id, user_id, capability_id, status, method, responses, observed_level, target_level, capability_gap, strengths, weaknesses, missing_evidence, evidence_supporting_diagnosis, explanation, recommended_priorities, provenance, confidence_score, created_at, completed_at.
 
+### personal_capability_paths
+id, user_id, capability_id, diagnostic_session_id, status, observed_level, target_level, capability_gap, weaknesses_snapshot, evidence_snapshot, skills_snapshot, summary, provenance, created_at, updated_at.
+
+### personal_path_items
+id, path_id, capability_id, learning_unit_id, sequence, stage, title, objective, activity, expected_output, completion_condition, gap_rationale, skill_code, target_level, status, completed_at, created_at.
+
 ### agents
 id, name, role, system_prompt, agent_type, status.
 
@@ -66,7 +72,7 @@ organizations, missions, outcomes, outcome_capabilities, simulations, capability
 5. System Mastery — concevoir, transmettre et gouverner le dispositif.
 
 ## MVP database scope
-Implémentation jusqu’au Sprint 2 : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions.
+Implémentation jusqu’au Sprint 3A : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions, personal_capability_paths, personal_path_items.
 
 ## Core invariant
 Une progression de maîtrise doit être traçable jusqu'aux évaluations et preuves qui la justifient. L'auto-évaluation seule ne peut produire un statut de maîtrise vérifiée.

@@ -96,3 +96,33 @@ export const diagnosticOutputSchema = z.object({
 
 export type DiagnosticEvidence = z.infer<typeof diagnosticEvidenceSchema>;
 export type DiagnosticOutput = z.infer<typeof diagnosticOutputSchema>;
+
+export const pathStages = ["understand", "learn", "practice", "challenge", "apply", "prove", "master"] as const;
+export type PathStage = (typeof pathStages)[number];
+
+export const personalPathItemSchema = z.object({
+  sequence: z.number().int().min(1).max(30),
+  stage: z.enum(pathStages),
+  capabilityCode: z.string().min(1).max(100),
+  skillCode: z.string().min(1).max(100).nullable(),
+  title: z.string().min(1).max(200),
+  objective: z.string().min(1).max(500),
+  activity: z.string().min(1).max(1000),
+  expectedOutput: z.string().min(1).max(500),
+  completionCondition: z.string().min(1).max(500),
+  gapRationale: z.string().min(1).max(500),
+  targetLevel: z.number().int().min(1).max(5)
+});
+
+export const personalPathOutputSchema = z.object({
+  capabilityCode: z.string().min(1).max(100),
+  observedLevel: z.number().int().min(1).max(5),
+  targetLevel: z.number().int().min(1).max(5),
+  capabilityGap: z.number().int().min(0).max(4),
+  summary: z.string().min(1).max(2000),
+  items: z.array(personalPathItemSchema).min(1).max(30),
+  provenance: z.literal("AI assisted")
+});
+
+export type PersonalPathItem = z.infer<typeof personalPathItemSchema>;
+export type PersonalPathOutput = z.infer<typeof personalPathOutputSchema>;

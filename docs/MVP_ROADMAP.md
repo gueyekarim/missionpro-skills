@@ -34,10 +34,14 @@ Valider une boucle complète de développement capacitaire avant d'ajouter marke
 
 **Exit:** un utilisateur possède un profil capacitaire initial explicable.
 
-## Sprint 3 — Learning Path + NOVA Tutor
+## Sprint 3A — Personal Capability Path
 - génération du Personal Capability Path ;
 - learning units ;
 - progression ;
+
+**Exit:** un diagnostic devient un parcours personnel enregistré, ciblé sur les gaps et distinct de la maîtrise.
+
+## Sprint 3B — NOVA Tutor
 - NOVA Tutor contextualisé par le Context Contract.
 
 **Exit:** NOVA enseigne à partir du niveau réel et du parcours enregistré.

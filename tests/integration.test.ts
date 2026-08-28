@@ -5,18 +5,19 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { persistCapabilityDraft } from "../src/server/capabilities";
 import { persistDiagnostic } from "../src/server/diagnostics";
+import { persistPersonalPath } from "../src/server/paths";
 
 const hasDatabase = Boolean(process.env.DATABASE_URL);
 const db = new PrismaClient();
 
-describe("Sprint 0/1/2 PostgreSQL integration", () => {
+describe("Sprint 0/1/2/3A PostgreSQL integration", () => {
   test("migration tables and repeatable seed are present", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
     const tables = await db.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename FROM pg_catalog.pg_tables
       WHERE schemaname = 'public'
-      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions')
+      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions', 'personal_capability_paths', 'personal_path_items')
     `;
-    assert.equal(tables.length, 11);
+    assert.equal(tables.length, 13);
     assert.equal(await db.masteryLevel.count(), 5);
     assert.ok(await db.capability.findUnique({ where: { code: "CAP-PROJ-RISK-001" } }));
     assert.equal(await db.agent.count({ where: { name: "NOVA Orchestrator" } }), 1);
@@ -109,6 +110,46 @@ describe("Sprint 0/1/2 PostgreSQL integration", () => {
     assert.equal(profile.targetLevel, saved.result.targetLevel);
     assert.equal(profile.evidenceCount, 0);
     await db.user.delete({ where: { id: user.id } });
+  });
+
+  test("two users receive persisted, different paths for the same Capability", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
+    const capability = await db.capability.findUniqueOrThrow({ where: { code: "CAP-PROJ-RISK-001" } });
+    const [foundationUser, advancedUser] = await Promise.all([
+      db.user.create({ data: { email: `path-foundation-${crypto.randomUUID()}@missionpro.test`, name: "Foundation User" } }),
+      db.user.create({ data: { email: `path-advanced-${crypto.randomUUID()}@missionpro.test`, name: "Advanced User" } })
+    ]);
+    const foundationDiagnostic = await persistDiagnostic({
+      capabilityId: capability.id,
+      responses: {
+        selfAssessment: 4,
+        knowledgeAnswer: "Je consulte les documents avec mon équipe avant de commencer.",
+        miniCaseAnswer: "Je réunis les parties prenantes afin de discuter du projet.",
+        productionAnswer: "Je prépare une note générale et je la partage pendant une réunion."
+      }
+    }, foundationUser.id);
+    const advancedDiagnostic = await persistDiagnostic({
+      capabilityId: capability.id,
+      responses: {
+        selfAssessment: 3,
+        knowledgeAnswer: "J’analyse le contexte, la probabilité, l’impact et la criticité.",
+        miniCaseAnswer: "Je choisis une réponse et je nomme un responsable.",
+        productionAnswer: "Je prépare un tableau synthétique avec les décisions à suivre."
+      }
+    }, advancedUser.id);
+    assert.equal(foundationDiagnostic.result.observedLevel, 1);
+    assert.equal(advancedDiagnostic.result.observedLevel, 3);
+
+    const foundationPath = await persistPersonalPath({ capabilityId: capability.id }, foundationUser.id);
+    const advancedPath = await persistPersonalPath({ capabilityId: capability.id }, advancedUser.id);
+    assert.ok(foundationPath.path.items.length > advancedPath.path.items.length);
+    assert.ok(foundationPath.path.items.some((item) => item.stage === "understand"));
+    assert.equal(advancedPath.path.items.some((item) => item.stage === "understand"), false);
+    assert.equal(advancedPath.path.items.filter((item) => item.skillCode).every((item) => item.skillCode === "SKILL-RISK-PRIORITIZATION"), true);
+    assert.equal(await db.userCapability.findUniqueOrThrow({
+      where: { userId_capabilityId: { userId: advancedUser.id, capabilityId: capability.id } }
+    }).then((profile) => profile.observedLevel), 3);
+
+    await db.user.deleteMany({ where: { id: { in: [foundationUser.id, advancedUser.id] } } });
   });
 });
 

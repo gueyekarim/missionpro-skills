@@ -11,7 +11,7 @@ async function main() {
     db.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename FROM pg_catalog.pg_tables
       WHERE schemaname = 'public'
-      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions')
+      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions', 'personal_capability_paths', 'personal_path_items')
       ORDER BY tablename
     `
   ]);
@@ -21,7 +21,7 @@ async function main() {
     throw new Error("Mastery seed verification failed");
   }
   if (!capability) throw new Error("Reference capability seed verification failed");
-  if (tableRows.length < 11) throw new Error(`Expected 11 MVP tables through Sprint 2, found ${tableRows.length}`);
+  if (tableRows.length < 13) throw new Error(`Expected 13 MVP tables through Sprint 3A, found ${tableRows.length}`);
   console.log(JSON.stringify({
     database: "connected",
     tables: tableRows.map((row) => row.tablename),

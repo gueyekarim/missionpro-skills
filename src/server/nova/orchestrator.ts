@@ -6,10 +6,12 @@ import {
   novaModes,
   capabilityDraftSchema,
   diagnosticOutputSchema,
+  personalPathOutputSchema,
   novaSmokeOutputSchema,
   type ContextContract,
   type CapabilityDraft,
   type DiagnosticOutput,
+  type PersonalPathOutput,
   type NovaMode,
   type NovaSmokeOutput
 } from "./context-contract";
@@ -20,7 +22,7 @@ type NovaProvider = (input: {
   mode: NovaMode;
   context: ContextContract;
   task: string;
-  output: "smoke" | "capability" | "diagnostic";
+  output: "smoke" | "capability" | "diagnostic" | "path";
 }) => Promise<unknown>;
 
 const mockProvider: NovaProvider = async ({ mode, context, task, output }) => {
@@ -126,6 +128,11 @@ const mockProvider: NovaProvider = async ({ mode, context, task, output }) => {
     };
   }
 
+  if (output === "path") {
+    const facts = JSON.parse(task) as Omit<PersonalPathOutput, "provenance">;
+    return { ...facts, provenance: "AI assisted" };
+  }
+
   return {
     mode,
     message: `Smoke response for ${mode}: ${task || "continue with an observable capability practice."}`,
@@ -214,10 +221,48 @@ const diagnosticJsonSchema = {
   ]
 };
 
+const personalPathJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    capabilityCode: { type: "string" },
+    observedLevel: { type: "integer", minimum: 1, maximum: 5 },
+    targetLevel: { type: "integer", minimum: 1, maximum: 5 },
+    capabilityGap: { type: "integer", minimum: 0, maximum: 4 },
+    summary: { type: "string" },
+    items: {
+      type: "array",
+      minItems: 1,
+      maxItems: 30,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          sequence: { type: "integer", minimum: 1, maximum: 30 },
+          stage: { type: "string", enum: ["understand", "learn", "practice", "challenge", "apply", "prove", "master"] },
+          capabilityCode: { type: "string" },
+          skillCode: { type: ["string", "null"] },
+          title: { type: "string" },
+          objective: { type: "string" },
+          activity: { type: "string" },
+          expectedOutput: { type: "string" },
+          completionCondition: { type: "string" },
+          gapRationale: { type: "string" },
+          targetLevel: { type: "integer", minimum: 1, maximum: 5 }
+        },
+        required: ["sequence", "stage", "capabilityCode", "skillCode", "title", "objective", "activity", "expectedOutput", "completionCondition", "gapRationale", "targetLevel"]
+      }
+    },
+    provenance: { type: "string", enum: ["AI assisted"] }
+  },
+  required: ["capabilityCode", "observedLevel", "targetLevel", "capabilityGap", "summary", "items", "provenance"]
+};
+
 async function openAiProvider({ mode, context, task, output }: Parameters<NovaProvider>[0]): Promise<unknown> {
   const config = getServerConfig();
   const isCapability = output === "capability";
-  const isDiagnostic = output === "diagnostic";
+   const isDiagnostic = output === "diagnostic";
+  const isPath = output === "path";
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -230,9 +275,9 @@ async function openAiProvider({ mode, context, task, output }: Parameters<NovaPr
       response_format: {
         type: "json_schema",
         json_schema: {
-          name: isCapability ? "nova_capability_draft" : isDiagnostic ? "nova_diagnostic_output" : "nova_smoke_output",
+           name: isCapability ? "nova_capability_draft" : isDiagnostic ? "nova_diagnostic_output" : isPath ? "nova_personal_capability_path" : "nova_smoke_output",
           strict: true,
-          schema: isCapability ? capabilityDraftJsonSchema : isDiagnostic ? diagnosticJsonSchema : {
+           schema: isCapability ? capabilityDraftJsonSchema : isDiagnostic ? diagnosticJsonSchema : isPath ? personalPathJsonSchema : {
             type: "object",
             additionalProperties: false,
             properties: {
@@ -302,6 +347,17 @@ export class NovaOrchestrator {
     } catch (error) {
       console.error("[nova] diagnostician failure", error instanceof Error ? error.message : "unknown error");
       throw new Error("NOVA Diagnostician could not produce a valid diagnostic");
+    }
+  }
+
+  async runPath(context: ContextContract, task: string): Promise<PersonalPathOutput> {
+    const parsedContext = contextContractSchema.parse(context);
+    try {
+      const raw = await this.provider({ mode: "mentor", context: parsedContext, task, output: "path" });
+      return personalPathOutputSchema.parse(raw);
+    } catch (error) {
+      console.error("[nova] path generation failure", error instanceof Error ? error.message : "unknown error");
+      throw new Error("NOVA Mentor could not produce a valid personal capability path");
     }
   }
 }
