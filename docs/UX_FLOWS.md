@@ -24,10 +24,10 @@ Trois espaces : Learn, Ask NOVA et My Work. NOVA utilise le Context Contract : u
 Le serveur complète ce contexte avec les skills, le dernier diagnostic, le Personal Capability Path et l’activité courante. NOVA retourne une explication, un point d’apprentissage, une question, un exemple, un raisonnement guidé, un feedback, un exercice court, une connexion au travail et la prochaine action. Le Tutor n’enregistre pas le texte de la conversation et ne produit ni preuve, ni évaluation formelle, ni changement de maîtrise.
 
 ## Screen 6 — Practice Lab
-Modes MVP : Exercise, Case, Challenge et Real Work. Les simulations multi-agents complètes sont post-MVP.
+Modes MVP : Guided Exercise, Professional Case, Challenge, Short Simulation et Real Work. Le learner doit produire un livrable. NOVA Assessor applique une rubric visible, conserve les scores par critère et permet contestation ou réévaluation. La complétion seule n’est jamais évaluée.
 
 ## Screen 7 — Evidence & Assessment
-Une production est évaluée avec une rubric explicite. L’utilisateur peut ensuite choisir de l’enregistrer comme evidence.
+Une production est évaluée avec une rubric explicite. L’utilisateur peut ensuite choisir **Save this work as evidence**. L’Evidence Portfolio regroupe les preuves par Capability et montre la production, la source, les critères, le score, l’assessor, la provenance, le statut, l’historique de réévaluation et le besoin de validation. Une Evidence AI assessed n’est ni certifiée ni automatiquement convertie en maîtrise vérifiée.
 
 ## Screen 8 — Capability Passport
 Affiche les capacités en développement et démontrées, niveaux observés et cibles, nombre et qualité des preuves, dernière évaluation et prochaine action recommandée.

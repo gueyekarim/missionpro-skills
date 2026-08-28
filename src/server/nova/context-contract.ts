@@ -30,6 +30,8 @@ export const contextContractSchema = z.object({
   currentLearningUnit: z.record(z.unknown()).optional(),
   currentPath: z.record(z.unknown()).optional(),
   currentPathItem: z.record(z.unknown()).optional(),
+  currentPracticeActivity: z.record(z.unknown()).optional(),
+  currentProduction: z.string().optional(),
   recentAssessments: z.array(z.record(z.unknown())).default([]),
   evidenceAvailable: z.array(z.record(z.unknown())).default([]),
   previousLearningActivities: z.array(z.record(z.unknown())).optional(),
@@ -160,3 +162,29 @@ export const tutorOutputSchema = z.object({
 
 export type TutorRequest = z.infer<typeof tutorRequestSchema>;
 export type TutorOutput = z.infer<typeof tutorOutputSchema>;
+
+export const practiceTypes = ["exercise", "case", "challenge", "simulation", "real_work"] as const;
+export const practiceCriterionSchema = z.object({
+  code: z.string().min(1).max(80),
+  label: z.string().min(1).max(200),
+  maxScore: z.number().int().min(1).max(10),
+  weight: z.number().min(0).max(1)
+});
+export const assessmentCriterionResultSchema = practiceCriterionSchema.extend({
+  score: z.number().int().min(0).max(10),
+  rationale: z.string().min(1).max(1000)
+});
+export const assessorOutputSchema = z.object({
+  overallScore: z.number().int().min(0).max(100),
+  criterionScores: z.array(assessmentCriterionResultSchema).min(1).max(12),
+  strengths: z.array(z.string().min(1).max(500)).max(12),
+  weaknesses: z.array(z.string().min(1).max(500)).max(12),
+  missingElements: z.array(z.string().min(1).max(500)).max(12),
+  explanation: z.string().min(1).max(2000),
+  feedback: z.string().min(1).max(2000),
+  recommendedNextAction: z.string().min(1).max(1000),
+  masteryRecommendation: z.string().min(1).max(1000),
+  provenance: z.literal("AI assessed"),
+  limitations: z.array(z.string().min(1).max(500)).max(8)
+});
+export type AssessorOutput = z.infer<typeof assessorOutputSchema>;

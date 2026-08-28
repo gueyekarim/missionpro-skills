@@ -78,12 +78,26 @@ la question et de la réponse ne l’est pas.
 Le rapport de vérification est disponible dans
 [`docs/SPRINT_3B_EVIDENCE.md`](docs/SPRINT_3B_EVIDENCE.md).
 
+## Sprint 4 — Practice + Assessment
+
+La route protégée `/app/practice` propose Guided Exercise, Professional Case, Challenge, Short
+Simulation et Real Work. Le learner produit un livrable, puis NOVA Assessor applique une rubric
+explicite. L’évaluation reste `AI assessed`, peut être contestée ou rejouée et ne modifie pas
+automatiquement la maîtrise.
+
+## Sprint 5A — Evidence Engine
+
+Après une production évaluée, le learner peut choisir **Save this work as evidence**. La preuve
+conserve les liens vers la Capability, l’activité, la production, l’assessment, les critères, le
+score et la provenance. `/app/evidence` regroupe ces preuves par Capability et montre l’historique
+de réévaluation ainsi que le besoin de validation supplémentaire.
+
 ## Démarrage développeur
 
 Le dépôt conserve le socle Sprint 0 : application Next.js/TypeScript, PostgreSQL via Prisma,
 authentification individuelle par session HttpOnly, navigation protégée et NOVA Orchestrator
-server-side. Capabilities, Diagnostic, My Path et NOVA Tutor sont fonctionnels ; Practice, Evidence
-et Passport restent des placeholders pour les sprints suivants.
+server-side. Capabilities, Diagnostic, My Path, NOVA Tutor, Practice, Assessment et Evidence
+Portfolio sont fonctionnels ; Capability Passport reste un placeholder pour un sprint suivant.
 
 ### Prérequis
 

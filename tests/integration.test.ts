@@ -7,18 +7,20 @@ import { persistCapabilityDraft } from "../src/server/capabilities";
 import { persistDiagnostic } from "../src/server/diagnostics";
 import { persistPersonalPath } from "../src/server/paths";
 import { generateTutorResponse } from "../src/server/tutor";
+import { ensurePracticeActivities, reviewPractice, submitPractice } from "../src/server/practice";
+import { getEvidencePortfolio, saveSubmissionAsEvidence } from "../src/server/evidence";
 
 const hasDatabase = Boolean(process.env.DATABASE_URL);
 const db = new PrismaClient();
 
-describe("Sprint 0/1/2/3A/3B PostgreSQL integration", () => {
+describe("Sprint 0 through Sprint 5A PostgreSQL integration", () => {
   test("migration tables and repeatable seed are present", { skip: !hasDatabase ? "DATABASE_URL is not configured" : false }, async () => {
     const tables = await db.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename FROM pg_catalog.pg_tables
       WHERE schemaname = 'public'
-      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions', 'personal_capability_paths', 'personal_path_items', 'tutor_interactions')
+      AND tablename IN ('users', 'capabilities', 'skills', 'capability_skills', 'mastery_levels', 'learning_units', 'assessments', 'evidence', 'user_capabilities', 'agents', 'diagnostic_sessions', 'personal_capability_paths', 'personal_path_items', 'tutor_interactions', 'practice_activities', 'practice_submissions', 'practice_assessment_attempts')
     `;
-    assert.equal(tables.length, 14);
+    assert.equal(tables.length, 17);
     assert.equal(await db.masteryLevel.count(), 5);
     assert.ok(await db.capability.findUnique({ where: { code: "CAP-PROJ-RISK-001" } }));
     assert.equal(await db.agent.count({ where: { name: "NOVA Orchestrator" } }), 1);
@@ -167,6 +169,58 @@ describe("Sprint 0/1/2/3A/3B PostgreSQL integration", () => {
     assert.match(foundationTutor.output.teachingPoint, /repérage du contexte/i);
     assert.match(advancedTutor.output.teachingPoint, /arbitrage/i);
     assert.equal(await db.tutorInteraction.count({ where: { userId: { in: [foundationUser.id, advancedUser.id] } } }), 2);
+
+    const foundationPractice = await ensurePracticeActivities(capability.id, foundationUser.id);
+    const advancedPractice = await ensurePracticeActivities(capability.id, advancedUser.id);
+    assert.deepEqual(foundationPractice.activities.map((activity) => activity.type), ["exercise", "case", "challenge", "simulation", "real_work"]);
+    const weak = await submitPractice({
+      activityId: foundationPractice.activities.find((activity) => activity.type === "challenge")?.id,
+      production: "Je convoque une réunion avec l’équipe pour discuter du problème et décider ensemble de la suite du projet."
+    }, foundationUser.id);
+    const strong = await submitPractice({
+      activityId: advancedPractice.activities.find((activity) => activity.type === "challenge")?.id,
+      production: "Matrice et tableau de risques. Risque, menace et événement fournisseur : probabilité 4/5, impact 5/5, criticité 20, priorité haute. Je justifie et compare cet arbitrage car il bloque le chemin critique. Réponse et traitement par atténuation, action suivie par un responsable. Second risque accessibilité : probabilité 3/5, impact 5/5, priorité 2, action corrective et responsable accessibilité. Livrable revu en comité."
+    }, advancedUser.id);
+    assert.ok(weak.output.overallScore < strong.output.overallScore);
+    assert.notEqual(weak.output.recommendedNextAction, strong.output.recommendedNextAction);
+    assert.equal(weak.output.provenance, "AI assessed");
+    const contested = await reviewPractice({
+      action: "contest",
+      assessmentAttemptId: weak.attempt.id,
+      reason: "The production context was incomplete and should be reviewed with the project constraints."
+    }, foundationUser.id);
+    assert.equal(contested.attempt.status, "contested");
+    const reassessed = await reviewPractice({ action: "reassess", submissionId: strong.submission.id }, advancedUser.id);
+    assert.equal(reassessed.action, "reassessed");
+    assert.equal(await db.practiceAssessmentAttempt.count({ where: { userId: { in: [foundationUser.id, advancedUser.id] } } }), 3);
+    await assert.rejects(
+      saveSubmissionAsEvidence({ submissionId: strong.submission.id }, foundationUser.id),
+      /Practice submission not found/
+    );
+    const weakEvidence = await saveSubmissionAsEvidence({ submissionId: weak.submission.id }, foundationUser.id);
+    const strongEvidence = await saveSubmissionAsEvidence({ submissionId: strong.submission.id }, advancedUser.id);
+    assert.equal(weakEvidence.status, "AI assessed");
+    assert.equal(strongEvidence.status, "AI assessed");
+    assert.equal(weakEvidence.verified, false);
+    assert.equal(strongEvidence.verified, false);
+    assert.equal(weakEvidence.score, "0");
+    assert.equal(strongEvidence.score, "93");
+    assert.equal(await db.evidence.count({ where: { userId: { in: [foundationUser.id, advancedUser.id] } } }), 2);
+    const foundationPortfolio = await getEvidencePortfolio(foundationUser.id);
+    const advancedPortfolio = await getEvidencePortfolio(advancedUser.id);
+    assert.equal(foundationPortfolio.groups[0].capability.code, "CAP-PROJ-RISK-001");
+    assert.equal(foundationPortfolio.groups[0].evidence[0].validationRequired, true);
+    assert.equal(advancedPortfolio.groups[0].evidence[0].assessmentHistory.length, 2);
+    assert.equal(advancedPortfolio.groups[0].evidence[0].assessment?.id, reassessed.attempt.id);
+    assert.equal(await db.evidence.count({
+      where: { practiceActivityId: foundationPractice.activities.find((activity) => activity.type === "exercise")?.id }
+    }), 0);
+    assert.equal(await db.userCapability.findUniqueOrThrow({
+      where: { userId_capabilityId: { userId: foundationUser.id, capabilityId: capability.id } }
+    }).then((profile) => profile.observedLevel), 1);
+    assert.equal(await db.userCapability.findUniqueOrThrow({
+      where: { userId_capabilityId: { userId: advancedUser.id, capabilityId: capability.id } }
+    }).then((profile) => profile.observedLevel), 3);
 
     await db.user.deleteMany({ where: { id: { in: [foundationUser.id, advancedUser.id] } } });
   });

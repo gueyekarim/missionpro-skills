@@ -59,14 +59,21 @@ Valider une boucle complète de développement capacitaire avant d'ajouter marke
 
 **Exit:** une production peut être évaluée avec critères explicites.
 
-## Sprint 5 — Evidence + Passport
+## Sprint 5A — Evidence Engine + Portfolio
 - sauvegarde de la preuve ;
 - Evidence Portfolio ;
-- mise à jour de user_capabilities ;
+- trace assessment, rubric et reassessment ;
+- gouvernance de provenance ;
+- aucune promotion automatique de maîtrise.
+
+**Exit:** une production MP-001 évaluée peut devenir, sur choix explicite, une Evidence traçable et visible par Capability.
+
+## Sprint 5B — Capability Passport
+- mise à jour evidence-aware de user_capabilities ;
 - Capability Passport ;
 - next action.
 
-**Exit:** le scénario MP-001 fonctionne de bout en bout.
+**Exit:** différé ; non implémenté dans Sprint 5A.
 
 ## Deferred after MVP
 Organization Mode complet, simulations multi-agents, payments, storefront, community, marketing automation, affiliate system, native mobile applications et marketplace.

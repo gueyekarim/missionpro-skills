@@ -8,63 +8,67 @@ datasource db {
 }
 
 model User {
-  id              String             @id @default(uuid()) @db.Uuid
-  email           String             @unique
-  name            String?
-  passwordHash    String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  createdCapabilities Capability[]   @relation("CapabilityCreator")
-  evidence        Evidence[]
-  capabilities    UserCapability[]
-  diagnosticSessions DiagnosticSession[]
-  personalPaths    PersonalCapabilityPath[]
-  tutorInteractions TutorInteraction[]
-  sessions        Session[]
+  id                  String                      @id @default(uuid()) @db.Uuid
+  email               String                      @unique
+  name                String?
+  passwordHash        String?
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+  createdCapabilities Capability[]                @relation("CapabilityCreator")
+  evidence            Evidence[]
+  capabilities        UserCapability[]
+  diagnosticSessions  DiagnosticSession[]
+  personalPaths       PersonalCapabilityPath[]
+  tutorInteractions   TutorInteraction[]
+  practiceActivities  PracticeActivity[]
+  practiceSubmissions PracticeSubmission[]
+  practiceAssessments PracticeAssessmentAttempt[]
+  sessions            Session[]
 
   @@map("users")
 }
 
 model Capability {
-  id                  String                    @id @default(uuid()) @db.Uuid
-  code                String                    @unique
-  name                String
-  description         String
-  domain              String?
-  capabilityType      String                    @default("professional")
-  purpose             String?
-  businessOutcome     String?
-  sourceIntent        String?
-  outcomes            Json?
+  id                    String                   @id @default(uuid()) @db.Uuid
+  code                  String                   @unique
+  name                  String
+  description           String
+  domain                String?
+  capabilityType        String                   @default("professional")
+  purpose               String?
+  businessOutcome       String?
+  sourceIntent          String?
+  outcomes              Json?
   knowledgeRequirements Json?
-  observableTasks     Json?
-  successCriteria     Json?
-  context             Json?
-  criticality         String?
-  targetLevel         Int?
-  evidenceRequirements Json?
-  version             Int                       @default(1)
-  status              String                    @default("active")
-  createdById         String?                   @db.Uuid
-  createdBy           User?                     @relation("CapabilityCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt           DateTime                  @default(now())
-  updatedAt           DateTime                  @updatedAt
-  skills              CapabilitySkill[]
-  learningUnits       CapabilityLearningUnit[]
-  assessments         CapabilityAssessment[]
-  evidence            Evidence[]
-  userCapabilities    UserCapability[]
-  diagnosticSessions  DiagnosticSession[]
-  personalPaths       PersonalCapabilityPath[]
-  personalPathItems   PersonalPathItem[]
-  tutorInteractions   TutorInteraction[]
+  observableTasks       Json?
+  successCriteria       Json?
+  context               Json?
+  criticality           String?
+  targetLevel           Int?
+  evidenceRequirements  Json?
+  version               Int                      @default(1)
+  status                String                   @default("active")
+  createdById           String?                  @db.Uuid
+  createdBy             User?                    @relation("CapabilityCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  skills                CapabilitySkill[]
+  learningUnits         CapabilityLearningUnit[]
+  assessments           CapabilityAssessment[]
+  evidence              Evidence[]
+  userCapabilities      UserCapability[]
+  diagnosticSessions    DiagnosticSession[]
+  personalPaths         PersonalCapabilityPath[]
+  personalPathItems     PersonalPathItem[]
+  tutorInteractions     TutorInteraction[]
+  PracticeActivity      PracticeActivity[]
 
   @@map("capabilities")
 }
 
 model Skill {
-  id           String             @id @default(uuid()) @db.Uuid
-  code         String             @unique
+  id           String            @id @default(uuid()) @db.Uuid
+  code         String            @unique
   name         String
   description  String?
   category     String?
@@ -75,40 +79,40 @@ model Skill {
 }
 
 model CapabilitySkill {
-  capabilityId String     @db.Uuid
-  skillId      String     @db.Uuid
-  weight       Decimal?   @db.Decimal(5, 2)
+  capabilityId  String     @db.Uuid
+  skillId       String     @db.Uuid
+  weight        Decimal?   @db.Decimal(5, 2)
   requiredLevel Int?
-  capability   Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
-  skill        Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  capability    Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  skill         Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@id([capabilityId, skillId])
   @@map("capability_skills")
 }
 
 model MasteryLevel {
-  id                 String   @id @default(uuid()) @db.Uuid
-  levelNumber        Int      @unique
-  name               String   @unique
-  description        String
+  id                  String   @id @default(uuid()) @db.Uuid
+  levelNumber         Int      @unique
+  name                String   @unique
+  description         String
   observableBehaviors Json
-  minimumEvidence    Int      @default(0)
-  assessmentRules    Json
-  createdAt          DateTime @default(now())
+  minimumEvidence     Int      @default(0)
+  assessmentRules     Json
+  createdAt           DateTime @default(now())
 
   @@map("mastery_levels")
 }
 
 model LearningUnit {
-  id                 String                    @id @default(uuid()) @db.Uuid
-  title              String
-  type               String
-  objective          String
-  difficulty         Int?
-  estimatedDuration  Int?
-  createdAt          DateTime                  @default(now())
-  capabilities       CapabilityLearningUnit[]
-  personalPathItems   PersonalPathItem[]
+  id                String                   @id @default(uuid()) @db.Uuid
+  title             String
+  type              String
+  objective         String
+  difficulty        Int?
+  estimatedDuration Int?
+  createdAt         DateTime                 @default(now())
+  capabilities      CapabilityLearningUnit[]
+  personalPathItems PersonalPathItem[]
 
   @@map("learning_units")
 }
@@ -125,51 +129,65 @@ model CapabilityLearningUnit {
 }
 
 model Assessment {
-  id           String                 @id @default(uuid()) @db.Uuid
-  title        String
-  assessmentType String
-  rubric       Json
-  passingScore Decimal?               @db.Decimal(5, 2)
-  createdAt    DateTime               @default(now())
-  capabilities CapabilityAssessment[]
-  evidence     Evidence[]
+  id                 String                 @id @default(uuid()) @db.Uuid
+  title              String
+  assessmentType     String
+  rubric             Json
+  passingScore       Decimal?               @db.Decimal(5, 2)
+  createdAt          DateTime               @default(now())
+  capabilities       CapabilityAssessment[]
+  evidence           Evidence[]
+  practiceActivities PracticeActivity[]
 
   @@map("assessments")
 }
 
 model CapabilityAssessment {
-  capabilityId  String      @db.Uuid
-  assessmentId  String      @db.Uuid
-  masteryLevel  Int?
-  capability    Capability  @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
-  assessment    Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  capabilityId String     @db.Uuid
+  assessmentId String     @db.Uuid
+  masteryLevel Int?
+  capability   Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
   @@id([capabilityId, assessmentId])
   @@map("capability_assessments")
 }
 
 model Evidence {
-  id             String       @id @default(uuid()) @db.Uuid
-  userId         String       @db.Uuid
-  capabilityId   String       @db.Uuid
-  assessmentId   String?      @db.Uuid
-  evidenceType   String
-  title          String
-  description    String?
-  artifactUrl    String?
-  artifactText   String?
-  score          Decimal?      @db.Decimal(5, 2)
-  assessorType   String
-  assessorId     String?
-  aiAssessment   Json?
-  humanValidation Json?
-  verified       Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  capability     Capability   @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
-  assessment     Assessment?  @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  id                          String                     @id @default(uuid()) @db.Uuid
+  userId                      String                     @db.Uuid
+  capabilityId                String                     @db.Uuid
+  assessmentId                String?                    @db.Uuid
+  practiceActivityId          String?                    @db.Uuid
+  practiceSubmissionId        String?                    @db.Uuid
+  practiceAssessmentAttemptId String?                    @db.Uuid
+  skillCode                   String?
+  criteriaSnapshot            Json?
+  status                      String                     @default("Self-declared")
+  provenance                  String                     @default("Self-declared")
+  validationRequired          Boolean                    @default(true)
+  evidenceType                String
+  title                       String
+  description                 String?
+  artifactUrl                 String?
+  artifactText                String?
+  score                       Decimal?                   @db.Decimal(5, 2)
+  assessorType                String
+  assessorId                  String?
+  aiAssessment                Json?
+  humanValidation             Json?
+  verified                    Boolean                    @default(false)
+  createdAt                   DateTime                   @default(now())
+  user                        User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capability                  Capability                 @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  assessment                  Assessment?                @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  practiceActivity            PracticeActivity?          @relation(fields: [practiceActivityId], references: [id], onDelete: SetNull)
+  practiceSubmission          PracticeSubmission?        @relation(fields: [practiceSubmissionId], references: [id], onDelete: SetNull)
+  practiceAssessmentAttempt   PracticeAssessmentAttempt? @relation(fields: [practiceAssessmentAttemptId], references: [id], onDelete: SetNull)
 
+  @@unique([userId, practiceSubmissionId])
   @@index([userId, capabilityId])
+  @@index([userId, capabilityId, status])
   @@map("evidence")
 }
 
@@ -189,10 +207,10 @@ model UserCapability {
 }
 
 model DiagnosticSession {
-  id                          String     @id @default(uuid()) @db.Uuid
-  userId                      String     @db.Uuid
-  capabilityId                String     @db.Uuid
-  status                      String     @default("completed")
+  id                          String                   @id @default(uuid()) @db.Uuid
+  userId                      String                   @db.Uuid
+  capabilityId                String                   @db.Uuid
+  status                      String                   @default("completed")
   method                      Json
   responses                   Json
   observedLevel               Int
@@ -204,12 +222,12 @@ model DiagnosticSession {
   evidenceSupportingDiagnosis Json
   explanation                 String
   recommendedPriorities       Json
-  provenance                 String
-  confidenceScore             Decimal?   @db.Decimal(5, 2)
-  createdAt                   DateTime   @default(now())
+  provenance                  String
+  confidenceScore             Decimal?                 @db.Decimal(5, 2)
+  createdAt                   DateTime                 @default(now())
   completedAt                 DateTime?
-  user                        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  capability                  Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  user                        User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capability                  Capability               @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
   personalPaths               PersonalCapabilityPath[]
 
   @@index([userId, capabilityId, createdAt])
@@ -243,10 +261,10 @@ model PersonalCapabilityPath {
 }
 
 model PersonalPathItem {
-  id                  String                @id @default(uuid()) @db.Uuid
-  pathId              String                @db.Uuid
-  capabilityId        String                @db.Uuid
-  learningUnitId      String?               @db.Uuid
+  id                  String                 @id @default(uuid()) @db.Uuid
+  pathId              String                 @db.Uuid
+  capabilityId        String                 @db.Uuid
+  learningUnitId      String?                @db.Uuid
   sequence            Int
   stage               String
   title               String
@@ -257,13 +275,14 @@ model PersonalPathItem {
   gapRationale        String
   skillCode           String?
   targetLevel         Int
-  status              String                @default("not_started")
+  status              String                 @default("not_started")
   completedAt         DateTime?
-  createdAt           DateTime              @default(now())
+  createdAt           DateTime               @default(now())
   path                PersonalCapabilityPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
-  capability          Capability            @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
-  learningUnit        LearningUnit?         @relation(fields: [learningUnitId], references: [id], onDelete: SetNull)
+  capability          Capability             @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  learningUnit        LearningUnit?          @relation(fields: [learningUnitId], references: [id], onDelete: SetNull)
   tutorInteractions   TutorInteraction[]
+  practiceActivities  PracticeActivity[]
 
   @@unique([pathId, sequence])
   @@index([capabilityId])
@@ -271,24 +290,96 @@ model PersonalPathItem {
 }
 
 model TutorInteraction {
-  id           String                @id @default(uuid()) @db.Uuid
-  userId       String                @db.Uuid
-  capabilityId String                @db.Uuid
-  pathId       String?               @db.Uuid
-  pathItemId   String?               @db.Uuid
-  mode         String
-  action       String
+  id            String                  @id @default(uuid()) @db.Uuid
+  userId        String                  @db.Uuid
+  capabilityId  String                  @db.Uuid
+  pathId        String?                 @db.Uuid
+  pathItemId    String?                 @db.Uuid
+  mode          String
+  action        String
   observedLevel Int
-  targetLevel  Int
-  stage        String?
-  createdAt    DateTime              @default(now())
-  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  capability   Capability            @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
-  path         PersonalCapabilityPath? @relation(fields: [pathId], references: [id], onDelete: SetNull)
-  pathItem     PersonalPathItem?     @relation(fields: [pathItemId], references: [id], onDelete: SetNull)
+  targetLevel   Int
+  stage         String?
+  createdAt     DateTime                @default(now())
+  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capability    Capability              @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  path          PersonalCapabilityPath? @relation(fields: [pathId], references: [id], onDelete: SetNull)
+  pathItem      PersonalPathItem?       @relation(fields: [pathItemId], references: [id], onDelete: SetNull)
 
   @@index([userId, capabilityId, createdAt])
   @@map("tutor_interactions")
+}
+
+model PracticeActivity {
+  id                 String                      @id @default(uuid()) @db.Uuid
+  userId             String                      @db.Uuid
+  capabilityId       String                      @db.Uuid
+  pathItemId         String?                     @db.Uuid
+  assessmentId       String?                     @db.Uuid
+  type               String
+  title              String
+  scenario           String
+  objective          String
+  expectedOutput     String
+  masteryLevel       Int
+  skillCode          String?
+  gapRationale       String
+  assessmentCriteria Json
+  createdAt          DateTime                    @default(now())
+  user               User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  capability         Capability                  @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  pathItem           PersonalPathItem?           @relation(fields: [pathItemId], references: [id], onDelete: SetNull)
+  assessment         Assessment?                 @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  submissions        PracticeSubmission[]
+  assessmentAttempts PracticeAssessmentAttempt[]
+  evidence           Evidence[]
+
+  @@unique([userId, capabilityId, type])
+  @@index([userId, capabilityId, createdAt])
+  @@map("practice_activities")
+}
+
+model PracticeSubmission {
+  id          String                      @id @default(uuid()) @db.Uuid
+  userId      String                      @db.Uuid
+  activityId  String                      @db.Uuid
+  production  String
+  submittedAt DateTime                    @default(now())
+  user        User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity    PracticeActivity            @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  assessments PracticeAssessmentAttempt[]
+  evidence    Evidence[]
+
+  @@index([userId, activityId, submittedAt])
+  @@map("practice_submissions")
+}
+
+model PracticeAssessmentAttempt {
+  id                    String             @id @default(uuid()) @db.Uuid
+  userId                String             @db.Uuid
+  submissionId          String             @db.Uuid
+  activityId            String             @db.Uuid
+  overallScore          Int
+  criterionScores       Json
+  strengths             Json
+  weaknesses            Json
+  missingElements       Json
+  explanation           String
+  feedback              String
+  recommendedNextAction String
+  masteryRecommendation String?
+  provenance            String
+  status                String             @default("AI assessed")
+  contestReason         String?
+  contestedAt           DateTime?
+  createdAt             DateTime           @default(now())
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submission            PracticeSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  activity              PracticeActivity   @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  evidence              Evidence[]
+
+  @@index([userId, activityId, createdAt])
+  @@map("practice_assessment_attempts")
 }
 
 model Agent {

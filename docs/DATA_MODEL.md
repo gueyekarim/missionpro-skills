@@ -31,7 +31,7 @@ id, title, type, objective, difficulty, estimated_duration.
 id, title, assessment_type, rubric, passing_score.
 
 ### evidence
-id, user_id, capability_id, task_id, assessment_id, evidence_type, title, description, artifact_url, artifact_text, score, assessor_type, assessor_id, ai_assessment, human_validation, verified, created_at.
+id, user_id, capability_id, assessment_id, practice_activity_id, practice_submission_id, practice_assessment_attempt_id, skill_code, criteria_snapshot, status, provenance, validation_required, evidence_type, title, description, artifact_url, artifact_text, score, assessor_type, assessor_id, ai_assessment, human_validation, verified, created_at.
 
 ### user_capabilities
 user_id, capability_id, observed_level, target_level, confidence_score, evidence_count, last_assessed_at.
@@ -49,6 +49,15 @@ id, path_id, capability_id, learning_unit_id, sequence, stage, title, objective,
 id, user_id, capability_id, path_id, path_item_id, mode, action, observed_level, target_level, stage, created_at.
 
 Les interactions Tutor conservent uniquement un événement pédagogique minimal. Elles ne stockent ni question, ni réponse, ni message, ni prompt, ni contenu de conversation.
+
+### practice_activities
+id, user_id, capability_id, path_item_id, assessment_id, type, title, scenario, objective, expected_output, mastery_level, skill_code, gap_rationale, assessment_criteria, created_at.
+
+### practice_submissions
+id, user_id, activity_id, production, submitted_at.
+
+### practice_assessment_attempts
+id, user_id, submission_id, activity_id, overall_score, criterion_scores, strengths, weaknesses, missing_elements, explanation, feedback, recommended_next_action, mastery_recommendation, provenance, status, contest_reason, contested_at, created_at.
 
 ### agents
 id, name, role, system_prompt, agent_type, status.
@@ -77,7 +86,7 @@ organizations, missions, outcomes, outcome_capabilities, simulations, capability
 5. System Mastery — concevoir, transmettre et gouverner le dispositif.
 
 ## MVP database scope
-Implémentation jusqu’au Sprint 3B : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions, personal_capability_paths, personal_path_items, tutor_interactions.
+Implémentation jusqu’au Sprint 5A : users, capabilities, skills, capability_skills, mastery_levels, learning_units, assessments, evidence, user_capabilities, agents, diagnostic_sessions, personal_capability_paths, personal_path_items, tutor_interactions, practice_activities, practice_submissions, practice_assessment_attempts.
 
 ## Core invariant
 Une progression de maîtrise doit être traçable jusqu'aux évaluations et preuves qui la justifient. L'auto-évaluation seule ne peut produire un statut de maîtrise vérifiée.

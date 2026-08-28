@@ -8,12 +8,14 @@ import {
   diagnosticOutputSchema,
   personalPathOutputSchema,
   tutorOutputSchema,
+  assessorOutputSchema,
   novaSmokeOutputSchema,
   type ContextContract,
   type CapabilityDraft,
   type DiagnosticOutput,
   type PersonalPathOutput,
   type TutorOutput,
+  type AssessorOutput,
   type NovaMode,
   type NovaSmokeOutput
 } from "./context-contract";
@@ -24,7 +26,7 @@ type NovaProvider = (input: {
   mode: NovaMode;
   context: ContextContract;
   task: string;
-  output: "smoke" | "capability" | "diagnostic" | "path" | "tutor";
+  output: "smoke" | "capability" | "diagnostic" | "path" | "tutor" | "assessor";
 }) => Promise<unknown>;
 
 const mockProvider: NovaProvider = async ({ mode, context, task, output }) => {
@@ -168,6 +170,61 @@ const mockProvider: NovaProvider = async ({ mode, context, task, output }) => {
         : "Construisez une mini-fiche avec contexte, probabilité, impact et première réponse.",
       nextAction: "Produire la trace attendue pour l’étape actuelle, puis la comparer à sa condition de complétion.",
       provenance: "AI assisted"
+    };
+  }
+
+  if (output === "assessor") {
+    const input = JSON.parse(task) as {
+      production: string;
+      activity: { title: string; assessmentCriteria: Array<{ code: string; label: string; maxScore: number; weight: number }> };
+    };
+    const normalized = input.production.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const terms: Record<string, string[]> = {
+      risk_identification: ["risque", "menace", "evenement"],
+      probability_impact: ["probabilite", "impact", "criticite"],
+      prioritization: ["priorit", "priorite", "classe", "score", "urgent"],
+      treatment_strategy: ["reponse", "traitement", "attenu", "responsable", "action"],
+      reasoning: ["justif", "raison", "car", "arbitr", "compar"],
+      professional_output: ["matrice", "tableau", "livrable", "responsable", "risque"]
+    };
+    const criterionScores = input.activity.assessmentCriteria.map((criterion) => {
+      const matches = (terms[criterion.code] ?? [criterion.code]).filter((term) => normalized.includes(term));
+      const ratio = matches.length / Math.max(1, (terms[criterion.code] ?? [criterion.code]).length);
+      const score = matches.length === 0 ? 0 : ratio >= 0.66 ? 5 : ratio >= 0.33 ? 3 : 2;
+      return {
+        ...criterion,
+        score,
+        rationale: score >= 4
+          ? `La production traite explicitement ${criterion.label.toLocaleLowerCase()}.`
+          : score > 0
+            ? `Un signal existe pour ${criterion.label.toLocaleLowerCase()}, mais il doit être rendu plus explicite.`
+            : `La production ne permet pas encore de vérifier ${criterion.label.toLocaleLowerCase()}.`
+      };
+    });
+    const totalWeight = criterionScores.reduce((sum, item) => sum + item.weight, 0) || 1;
+    const overallScore = Math.round(criterionScores.reduce((sum, item) => sum + (item.score / item.maxScore) * item.weight, 0) / totalWeight * 100);
+    const strengths = criterionScores.filter((item) => item.score >= 4).map((item) => item.label);
+    const weaknesses = criterionScores.filter((item) => item.score > 0 && item.score < 4).map((item) => item.label);
+    const missingElements = criterionScores.filter((item) => item.score === 0).map((item) => item.label);
+    const strong = overallScore >= 75;
+    return {
+      overallScore,
+      criterionScores,
+      strengths,
+      weaknesses,
+      missingElements,
+      explanation: `La production a été comparée à la situation professionnelle et aux ${criterionScores.length} critères de la rubric de « ${input.activity.title} ».`,
+      feedback: strong
+        ? "Le raisonnement est exploitable. Renforcez la défense des arbitrages et la traçabilité de chaque action."
+        : "La production doit expliciter les risques, leurs probabilités et impacts, puis relier chaque priorité à un traitement et à un responsable.",
+      recommendedNextAction: strong
+        ? "Refaire le challenge avec un risque ambigu et défendre deux arbitrages avant de choisir."
+        : "Reprendre la matrice sur deux risques en ajoutant probabilité, impact, priorité, traitement et responsable.",
+      masteryRecommendation: strong
+        ? "Peut soutenir une revue humaine du niveau cible ; ne constitue pas une certification."
+        : "Ne recommande pas encore le niveau cible ; une activité de remédiation est indiquée.",
+      provenance: "AI assessed",
+      limitations: ["Analyse fondée sur la production fournie et la rubric ; une validation humaine reste distincte."]
     };
   }
 
@@ -315,12 +372,35 @@ const tutorJsonSchema = {
   required: ["mode", "response", "teachingPoint", "questionForLearner", "examples", "reasoningSteps", "feedback", "professionalConnection", "suggestedExercise", "nextAction", "provenance"]
 };
 
+const assessorJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    overallScore: { type: "integer", minimum: 0, maximum: 100 },
+    criterionScores: { type: "array", items: { type: "object", additionalProperties: false, properties: {
+      code: { type: "string" }, label: { type: "string" }, maxScore: { type: "integer" }, weight: { type: "number" },
+      score: { type: "integer" }, rationale: { type: "string" }
+    }, required: ["code", "label", "maxScore", "weight", "score", "rationale"] } },
+    strengths: { type: "array", items: { type: "string" } },
+    weaknesses: { type: "array", items: { type: "string" } },
+    missingElements: { type: "array", items: { type: "string" } },
+    explanation: { type: "string" },
+    feedback: { type: "string" },
+    recommendedNextAction: { type: "string" },
+    masteryRecommendation: { type: "string" },
+    provenance: { type: "string", enum: ["AI assessed"] },
+    limitations: { type: "array", items: { type: "string" } }
+  },
+  required: ["overallScore", "criterionScores", "strengths", "weaknesses", "missingElements", "explanation", "feedback", "recommendedNextAction", "masteryRecommendation", "provenance", "limitations"]
+};
+
 async function openAiProvider({ mode, context, task, output }: Parameters<NovaProvider>[0]): Promise<unknown> {
   const config = getServerConfig();
   const isCapability = output === "capability";
    const isDiagnostic = output === "diagnostic";
   const isPath = output === "path";
   const isTutor = output === "tutor";
+  const isAssessor = output === "assessor";
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -333,9 +413,9 @@ async function openAiProvider({ mode, context, task, output }: Parameters<NovaPr
       response_format: {
         type: "json_schema",
         json_schema: {
-           name: isCapability ? "nova_capability_draft" : isDiagnostic ? "nova_diagnostic_output" : isPath ? "nova_personal_capability_path" : isTutor ? "nova_tutor_response" : "nova_smoke_output",
+           name: isCapability ? "nova_capability_draft" : isDiagnostic ? "nova_diagnostic_output" : isPath ? "nova_personal_capability_path" : isTutor ? "nova_tutor_response" : isAssessor ? "nova_assessment_result" : "nova_smoke_output",
           strict: true,
-           schema: isCapability ? capabilityDraftJsonSchema : isDiagnostic ? diagnosticJsonSchema : isPath ? personalPathJsonSchema : isTutor ? tutorJsonSchema : {
+           schema: isCapability ? capabilityDraftJsonSchema : isDiagnostic ? diagnosticJsonSchema : isPath ? personalPathJsonSchema : isTutor ? tutorJsonSchema : isAssessor ? assessorJsonSchema : {
             type: "object",
             additionalProperties: false,
             properties: {
@@ -427,6 +507,17 @@ export class NovaOrchestrator {
     } catch (error) {
       console.error("[nova] tutor failure", error instanceof Error ? error.message : "unknown error");
       throw new Error("NOVA Tutor could not produce a valid contextual response");
+    }
+  }
+
+  async runAssessor(context: ContextContract, task: string): Promise<AssessorOutput> {
+    const parsedContext = contextContractSchema.parse(context);
+    try {
+      const raw = await this.provider({ mode: "assessor", context: parsedContext, task, output: "assessor" });
+      return assessorOutputSchema.parse(raw);
+    } catch (error) {
+      console.error("[nova] assessor failure", error instanceof Error ? error.message : "unknown error");
+      throw new Error("NOVA Assessor could not produce a valid structured assessment");
     }
   }
 }

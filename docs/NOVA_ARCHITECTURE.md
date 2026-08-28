@@ -54,5 +54,15 @@ Les appels destinés à créer ou modifier des objets métier doivent utiliser d
 ## Governance
 NOVA ne confond pas évaluation IA et certification. Statuts : Self-declared, AI assessed, Human validated, MissionPro verified, Externally certified.
 
+## Evidence Engine
+
+Sprint 5A transforme uniquement une production professionnelle déjà évaluée en Evidence, sur choix
+explicite du learner. La preuve conserve l’activité, la production, l’assessment choisi, la rubric,
+le score, l’assessor, le statut et la provenance. Les tentatives de réévaluation restent accessibles
+depuis la submission source.
+
+`AI assessed` ne devient jamais automatiquement `Human validated`, `MissionPro verified` ou
+`Externally certified`. L’existence d’une Evidence ne modifie pas silencieusement la maîtrise.
+
 ## Future direction
 Le NOVA Orchestrator pourra évoluer vers un système multi-agents avec simulations interactives, outils professionnels, RAG sur corpus MissionPro et accompagnement continu Learn → Practice → Work → Evidence.
